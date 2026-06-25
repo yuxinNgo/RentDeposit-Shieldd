@@ -17,6 +17,12 @@
 /.next/
 /out/
 
+# local app data
+/data/app-db.json
+
+# rust
+/contracts/target/
+
 # production
 /build
 
