@@ -188,6 +188,36 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Deploy on Railway
+
+This repo is prepared for Railway deployment.
+
+- `next.config.ts` uses `output: "standalone"` for self-hosted Next.js builds.
+- `npm run start` serves the standalone server.
+- `railway.toml` defines the build command, start command, restart policy, and a healthcheck path at `/api/health`.
+
+### Railway steps
+
+1. Create a new Railway project.
+2. Deploy this GitHub repository as a service.
+3. In the service variables, add:
+   - `DATABASE_URL`
+   - `NEXT_PUBLIC_STELLAR_RPC_URL`
+   - `NEXT_PUBLIC_STELLAR_HORIZON_URL`
+   - `NEXT_PUBLIC_STELLAR_NETWORK_PASSPHRASE`
+   - `NEXT_PUBLIC_STELLAR_CONTRACT_WASM_HASH`
+4. Generate a public Railway domain from the service Networking tab.
+
+### Database options
+
+- If you want to keep the current setup, paste your existing Neon `DATABASE_URL`.
+- If you want the database inside Railway, add a PostgreSQL service and create a reference variable for `DATABASE_URL` in the app service.
+
+### Notes
+
+- Railway injects `PORT` automatically; the standalone Next.js server uses it at runtime.
+- The healthcheck route verifies both app boot and database connectivity before Railway marks a deploy healthy.
+
 ## Useful scripts
 
 Quality checks:

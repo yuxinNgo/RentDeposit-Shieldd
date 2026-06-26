@@ -1,3 +1,4 @@
+import path from "node:path";
 import { Pool, type PoolClient, type QueryResult } from "pg";
 
 declare global {
@@ -20,16 +21,33 @@ function loadEnvFileIfAvailable(path: string) {
   }
 }
 
+function loadEnvironmentFromCommonLocations() {
+  const cwd = process.cwd();
+  const candidates = [
+    ".env.local",
+    ".env",
+    path.join(cwd, ".env.local"),
+    path.join(cwd, ".env"),
+    path.join(cwd, "..", ".env.local"),
+    path.join(cwd, "..", ".env"),
+    path.join(cwd, "..", "..", ".env.local"),
+    path.join(cwd, "..", "..", ".env"),
+  ];
+
+  for (const candidate of candidates) {
+    loadEnvFileIfAvailable(candidate);
+  }
+}
+
 function databaseUrl() {
   if (!process.env.DATABASE_URL) {
-    loadEnvFileIfAvailable(".env.local");
-    loadEnvFileIfAvailable(".env");
+    loadEnvironmentFromCommonLocations();
   }
 
   const url = process.env.DATABASE_URL;
 
   if (!url) {
-    throw new Error("DATABASE_URL is not configured. Add it to .env.local before using the app API.");
+    throw new Error("DATABASE_URL is not configured. Set it in your environment or .env.local before using the app API.");
   }
 
   if (url.includes("sslmode=require") && !url.includes("uselibpqcompat=") && !url.includes("sslmode=verify-full")) {

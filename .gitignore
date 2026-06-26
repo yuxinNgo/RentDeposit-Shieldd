@@ -37,6 +37,7 @@ yarn-error.log*
 .pnpm-debug.log*
 .codex-dev*.log
 .codex-start*.log
+.codex-railway*.log
 
 # local test artifacts
 .playwright-smoke/
