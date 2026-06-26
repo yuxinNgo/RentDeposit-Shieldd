@@ -5,6 +5,7 @@ import { RoleSwitcher } from "@/components/layout/role-switcher";
 import { WalletConnectButton } from "@/components/layout/wallet-connect-button";
 import { NetworkBadge } from "@/components/common/network-badge";
 import { useAppSession } from "@/components/providers/app-client-provider";
+import { getRoleMission } from "@/lib/navigation";
 
 function pageTitle(pathname: string) {
   if (pathname.startsWith("/cases/new")) return "Create a new deposit case";
@@ -22,6 +23,7 @@ export function Topbar() {
   const pathname = usePathname();
   const { session } = useAppSession();
   const displayName = session.name.trim() || session.role.toLowerCase();
+  const mission = getRoleMission(session.role);
 
   return (
     <header className="panel sticky top-4 z-20 rounded-[28px] px-4 py-4 md:px-6">
@@ -33,6 +35,7 @@ export function Topbar() {
             Signed in as <span className="font-semibold text-[var(--text-primary)]">{displayName}</span> with the{" "}
             {session.role.toLowerCase()} lens.
           </p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{mission.missionDescription}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <NetworkBadge />

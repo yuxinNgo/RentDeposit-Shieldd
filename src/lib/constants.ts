@@ -25,15 +25,6 @@ export const STATUS_LABELS: Record<DepositCaseStatus, string> = {
   CLOSED: "Closed",
 };
 
-export const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/cases", label: "Cases" },
-  { href: "/disputes", label: "Disputes" },
-  { href: "/analytics", label: "Analytics" },
-  { href: "/feedback", label: "Feedback" },
-  { href: "/submission", label: "Submission" },
-];
-
 export const ROLE_OPTIONS: UserRole[] = ["LANDLORD", "TENANT", "MEDIATOR"];
 
 export const EVENT_NAMES = [

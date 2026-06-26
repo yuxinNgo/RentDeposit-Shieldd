@@ -2,14 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FilePlus2, ShieldCheck } from "lucide-react";
-import { NAV_ITEMS } from "@/lib/constants";
+import { ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getRoleMission, getRoleNavItems, isNavItemActive } from "@/lib/navigation";
 import { NetworkBadge } from "@/components/common/network-badge";
+import { useAppSession } from "@/components/providers/app-client-provider";
 import { Button } from "@/components/ui/button";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { session } = useAppSession();
+  const navItems = getRoleNavItems(session.role);
+  const mission = getRoleMission(session.role);
+  const PrimaryActionIcon = mission.primaryActionIcon;
 
   return (
     <aside className="hidden w-72 shrink-0 flex-col gap-6 rounded-[28px] border border-[var(--border)] bg-[rgba(255,253,248,0.86)] p-6 shadow-[0_20px_50px_rgba(21,34,56,0.10)] lg:flex">
@@ -27,8 +32,8 @@ export function Sidebar() {
       </div>
 
       <nav className="space-y-2">
-        {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+        {navItems.map((item) => {
+          const isActive = isNavItemActive(item, pathname);
 
           return (
             <Link
@@ -49,14 +54,14 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto rounded-[24px] bg-[var(--navy)] p-5 text-white">
-        <p className="mb-2 text-sm font-semibold">Case creation stays inside this app</p>
-        <p className="mb-4 text-sm text-white/75">
-          No separate backend. Every flow writes through Next.js API routes into the Neon-backed workspace store.
-        </p>
-        <Button className="w-full bg-white text-[var(--navy)] hover:bg-white/90" onClick={() => (window.location.href = "/cases/new")}>
-          <FilePlus2 className="h-4 w-4" />
-          Create case
-        </Button>
+        <p className="mb-2 text-sm font-semibold">{mission.missionTitle}</p>
+        <p className="mb-4 text-sm text-white/75">{mission.missionDescription}</p>
+        <Link href={mission.defaultHref} className="block">
+          <Button className="w-full bg-white text-[var(--navy)] hover:bg-white/90">
+            <PrimaryActionIcon className="h-4 w-4" />
+            {mission.primaryActionLabel}
+          </Button>
+        </Link>
       </div>
     </aside>
   );
