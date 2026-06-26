@@ -84,6 +84,43 @@ RentDeposit Shield is a production-oriented Stellar testnet rental escrow worksp
 - `railway.toml` defines build and deploy settings
 - `npm run build` prepares standalone output and copies required static assets
 - `npm run start` binds the standalone server correctly for container environments
+- Railway healthchecks the app through `/api/health`
+
+## Railway Deployment
+
+Use the existing repository root with Railway. The app is already configured for standalone Next.js deployment.
+
+Required Railway settings:
+
+- Source repo: `yuxinNgo/RentDeposit-Shieldd`
+- Branch: `main`
+- Root directory: `/`
+- Builder: default Railway detection with the committed `railway.toml`
+
+Required Railway environment variables:
+
+- `DATABASE_URL`
+- `NEXT_PUBLIC_STELLAR_RPC_URL`
+- `NEXT_PUBLIC_STELLAR_HORIZON_URL`
+- `NEXT_PUBLIC_STELLAR_FRIENDBOT_URL`
+- `NEXT_PUBLIC_STELLAR_NETWORK_PASSPHRASE`
+- `NEXT_PUBLIC_STELLAR_CONTRACT_WASM_HASH`
+
+Runtime behavior already wired in this repo:
+
+- Build command: `npm run build`
+- Start command: `node scripts/start-standalone.mjs`
+- Healthcheck path: `/api/health`
+- Host binding: forced to `0.0.0.0` inside `scripts/start-standalone.mjs`
+- Static asset copy for CSS and public files: handled in `scripts/prepare-standalone.mjs`
+
+If Railway logs show old dependency errors such as `typescript@4.9.5` missing from the lock file, that deployment is not building the current `main` branch state of this repo. In that case:
+
+1. Confirm the Railway service points to `yuxinNgo/RentDeposit-Shieldd`.
+2. Confirm the deployed branch is `main`.
+3. Confirm the root directory is `/`.
+4. Clear the Railway build cache and redeploy.
+5. If the same old log still appears, disconnect and reconnect the GitHub repo in Railway so it rebuilds from the latest commit.
 
 ## Real On-Chain Proof
 
