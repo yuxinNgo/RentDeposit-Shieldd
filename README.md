@@ -75,6 +75,25 @@ The submission artifacts were generated against Stellar testnet and stored in [`
 - `1` move-in confirmation transaction
 - `8` feedback submissions
 
+### User wallet addresses
+
+These are public Stellar testnet wallet addresses used in the submission proof run.
+
+| Role | User | Wallet address |
+| --- | --- | --- |
+| `LANDLORD` | `Proof landlord 1` | `GDOFNAHR3KRKXAZLUZ7435PD2ZFADTD4CYB2VBSOLB3IDAOMCDG642JZ` |
+| `TENANT` | `Proof tenant 2` | `GBBDUOO2XMOCW4BGYTMWJBVXHRWZUWOKYGPBHJZ6CY5J5K3GZGHV5OKT` |
+| `MEDIATOR` | `Proof mediator 3` | `GBNY6MPRM2FFEPXGIJ4J73QUIQECS5GD4SHJHJ6P72HYHWKRPRY5625E` |
+| `LANDLORD` | `Proof landlord 4` | `GCPCQAST2TGULIM24FKEUK3M7CLHEWRS76NDXG32VZ3GL2PU6LCHLCOX` |
+| `TENANT` | `Proof tenant 5` | `GDA5SL3SM4WDMG3YHPSFNO4A5OHAURJ5AP7OTVUGGICN3ZP5O5LB5LQX` |
+| `MEDIATOR` | `Proof mediator 6` | `GCQYXYDW7VFCWFBFQWTZDAMRUBLFILA37ASIIDW6GRL5JJZQADL3EXQD` |
+| `LANDLORD` | `Proof landlord 7` | `GCR45LCXSA4F2FXLPEFWLWB4YRUQGHMF74B34MLS6GR72KM2HRWWFUX3` |
+| `TENANT` | `Proof tenant 8` | `GDBTQNI6CUPIGJCFXC54D6TXSCAP7UJTB2CKXYNYRTUYRO2EMM4Q3JJD` |
+| `MEDIATOR` | `Proof mediator 9` | `GAO6L5BK3ZPQ54PYFBCD43R5CT2G3UW375CGHJSUJMTKHZ6CK2CXRPZI` |
+| `LANDLORD` | `Proof landlord 10` | `GBV3CFBB3GXB7SOYGVIEFT2GEKJ75EBDOZECN46B3BITEVCOKX3ZKVOA` |
+| `TENANT` | `Proof tenant 11` | `GBERIBK3JUL4LFDQGFLSRTPNLA6PA35CQ7EMNIZSD6HH6AQBB6VS5ZOZ` |
+| `MEDIATOR` | `Proof mediator 12` | `GCLTB6F3VTZNQM4JPINUV5CV55YMTJ4SHXIUFMAGMW6S4BZPTGNVZ3DE` |
+
 ### Proof files
 
 - [`docs/submission-proof.json`](docs/submission-proof.json): public wallet addresses, tx hashes, analytics totals, feedback summary, and case metadata
