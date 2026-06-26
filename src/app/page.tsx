@@ -3,8 +3,8 @@ import { ArrowRight, Orbit, ShieldCheck, Workflow } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { NetworkBadge } from "@/components/common/network-badge";
-import { TransactionHashLink } from "@/components/common/transaction-hash-link";
-import { DEMO_CONTRACT_ADDRESS } from "@/lib/constants";
+import { shortHash } from "@/lib/utils";
+import { STELLAR_CONTRACT_WASM_HASH } from "@/lib/stellar/network";
 
 const steps = [
   "Landlord creates a deposit case and assigns tenant + mediator wallets.",
@@ -61,30 +61,30 @@ export default function HomePage() {
           <Card className="relative overflow-hidden">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-[24px] bg-[var(--navy)] p-5 text-white">
-                <p className="text-xs uppercase tracking-[0.24em] text-white/60">Case signal</p>
-                <p className="mt-3 text-3xl font-semibold">$42.5k</p>
-                <p className="mt-2 text-sm text-white/70">Seeded deposit volume in the local demo workspace</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-white/60">Wallet support</p>
+                <p className="mt-3 text-3xl font-semibold">2</p>
+                <p className="mt-2 text-sm text-white/70">Freighter and Rabet sign real Soroban transactions in-app.</p>
               </div>
               <div className="rounded-[24px] bg-[rgba(15,142,131,0.09)] p-5">
-                <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">Proof wallets</p>
-                <p className="mt-3 text-3xl font-semibold text-[var(--text-primary)]">10+</p>
-                <p className="mt-2 text-sm text-[var(--text-secondary)]">Tracked wallet interactions for the submission kit</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">Contract code hash</p>
+                <p className="mt-3 text-xl font-semibold text-[var(--text-primary)]">{shortHash(STELLAR_CONTRACT_WASM_HASH, 10)}</p>
+                <p className="mt-2 text-sm text-[var(--text-secondary)]">Each new case deploys its own contract instance from this installed testnet Wasm.</p>
               </div>
             </div>
             <div className="mt-4 rounded-[26px] border border-[var(--border)] bg-white/85 p-5">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--text-primary)]">Soroban contract plan</p>
-                  <p className="mt-1 text-sm text-[var(--text-secondary)]">Escrow state machine mirrored in the app flow</p>
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">Soroban contract flow</p>
+                  <p className="mt-1 text-sm text-[var(--text-secondary)]">Every state transition below is executed on Stellar testnet before the app syncs local audit data.</p>
                 </div>
                 <Orbit className="h-4 w-4 text-[var(--blue)]" />
               </div>
               <div className="space-y-3">
                 <div className="rounded-[22px] bg-[var(--surface-strong)] p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Contract address placeholder</p>
-                  <div className="mt-2">
-                    <TransactionHashLink hash={DEMO_CONTRACT_ADDRESS} kind="contract" />
-                  </div>
+                  <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Deployment mode</p>
+                  <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                    Landlords deploy a fresh contract per case. Tenants, landlords and mediators then sign their own on-chain actions with their assigned wallet.
+                  </p>
                 </div>
                 {steps.map((step, index) => (
                   <div key={step} className="flex gap-3 rounded-[22px] border border-[var(--border)] bg-white px-4 py-3">
@@ -119,7 +119,7 @@ export default function HomePage() {
           <Orbit className="h-5 w-5 text-[var(--amber)]" />
           <h2 className="mt-4 text-2xl font-semibold text-[var(--text-primary)]">Why Stellar</h2>
           <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
-            Fast, low-cost testnet settlement and Soroban contract logic make it easy to demo programmable escrow without pretending to be a live custody platform.
+            Fast, low-cost testnet settlement and Soroban contract logic make programmable escrow testable end-to-end without pretending to be a live custody platform.
           </p>
         </Card>
       </section>

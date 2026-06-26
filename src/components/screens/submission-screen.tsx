@@ -5,6 +5,7 @@ import { BadgeCheck, ExternalLink, GitCommitHorizontal, PlayCircle, Users } from
 import { useAppData } from "@/hooks/use-app-data";
 import { ErrorState } from "@/components/common/error-state";
 import { LoadingState } from "@/components/common/loading-state";
+import { EmptyState } from "@/components/common/empty-state";
 import { MonitoringStatusCard } from "@/components/analytics/monitoring-status-card";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,7 @@ export function SubmissionScreen() {
           <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">Startup track level 4</p>
           <h2 className="mt-2 text-3xl font-semibold text-[var(--text-primary)]">Submission evidence bundle</h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
-            One page to review repo link, demo link, contract address placeholder, user proof, feedback and readiness notes before pushing the final package.
+            One page to review repo link, live on-chain contract addresses, user proof, feedback and readiness notes before pushing the final package.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href={data.submission.repoUrl} target="_blank">
@@ -37,12 +38,14 @@ export function SubmissionScreen() {
                 GitHub repo
               </Button>
             </Link>
-            <Link href={data.submission.demoVideoUrl} target="_blank">
-              <Button variant="secondary">
-                <PlayCircle className="h-4 w-4" />
-                Demo placeholder
-              </Button>
-            </Link>
+            {data.submission.demoVideoUrl ? (
+              <Link href={data.submission.demoVideoUrl} target="_blank">
+                <Button variant="secondary">
+                  <PlayCircle className="h-4 w-4" />
+                  Demo video
+                </Button>
+              </Link>
+            ) : null}
           </div>
         </Card>
         <MonitoringStatusCard monitoring={data.monitoring} />
@@ -63,7 +66,9 @@ export function SubmissionScreen() {
             <p className="text-sm font-semibold text-[var(--text-primary)]">Contract address</p>
           </div>
           <p className="text-sm font-semibold text-[var(--text-primary)]">{shortHash(data.submission.contractAddress, 10)}</p>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">Placeholder until live Stellar testnet deployment.</p>
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">
+            {data.submission.contractAddress ? "Most recent case contract deployed from the app on Stellar testnet." : "No case contract has been deployed from this workspace yet."}
+          </p>
         </Card>
         <Card>
           <div className="mb-4 flex items-center gap-3">
@@ -89,16 +94,23 @@ export function SubmissionScreen() {
 
         <Card>
           <p className="mb-4 text-sm font-semibold text-[var(--text-primary)]">10-user proof list</p>
-          <div className="space-y-3">
-            {data.submission.proofUsers.map((user) => (
-              <div key={user.walletAddress} className="rounded-[22px] border border-[var(--border)] bg-white/80 p-4">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">{shortHash(user.walletAddress, 8)}</p>
-                <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                  {user.role} • {user.lastAction} • feedback {user.feedbackSubmitted ? "yes" : "no"}
-                </p>
-              </div>
-            ))}
-          </div>
+          {data.submission.proofUsers.length === 0 ? (
+            <EmptyState
+              title="No proof wallets yet"
+              description="Wallet proof appears here after real Freighter or Rabet interactions are recorded in the app."
+            />
+          ) : (
+            <div className="space-y-3">
+              {data.submission.proofUsers.map((user) => (
+                <div key={user.walletAddress} className="rounded-[22px] border border-[var(--border)] bg-white/80 p-4">
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">{shortHash(user.walletAddress, 8)}</p>
+                  <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                    {user.role} • {user.lastAction} • feedback {user.feedbackSubmitted ? "yes" : "no"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
       </section>
     </div>

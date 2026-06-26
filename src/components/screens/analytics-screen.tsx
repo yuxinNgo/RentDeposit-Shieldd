@@ -29,7 +29,7 @@ export function AnalyticsScreen() {
         <MetricCard icon={Eye} label="Page views" value={String(totals.page_view ?? 0)} description="Tracked directly from the app event stream." />
         <MetricCard icon={UserRoundCheck} label="Wallet connects" value={String(totals.wallet_connected ?? 0)} description="Connection proofs ready for submission." />
         <MetricCard icon={CircleDollarSign} label="Deposits funded" value={String(totals.deposit_funded ?? 0)} description="Cases where escrow funding completed." />
-        <MetricCard icon={BarChart3} label="Feedback" value={String(totals.feedback_submitted ?? data.feedback.length)} description="Responses from demo participants." />
+        <MetricCard icon={BarChart3} label="Feedback" value={String(totals.feedback_submitted ?? data.feedback.length)} description="Responses collected from active users." />
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
@@ -40,7 +40,7 @@ export function AnalyticsScreen() {
       <Card>
         <div className="mb-4">
           <p className="text-sm font-semibold text-[var(--text-primary)]">Recent events</p>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">Latest tracked analytics events from seeded and local demo traffic.</p>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">Latest tracked analytics events from the live Neon-backed workspace.</p>
         </div>
         {data.analytics.recentEvents.length === 0 ? (
           <EmptyState title="No events yet" description="Interact with the app to populate analytics events." />

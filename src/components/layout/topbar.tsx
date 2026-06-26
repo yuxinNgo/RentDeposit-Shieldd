@@ -21,6 +21,7 @@ function pageTitle(pathname: string) {
 export function Topbar() {
   const pathname = usePathname();
   const { session } = useAppSession();
+  const displayName = session.name.trim() || session.role.toLowerCase();
 
   return (
     <header className="panel sticky top-4 z-20 rounded-[28px] px-4 py-4 md:px-6">
@@ -29,7 +30,7 @@ export function Topbar() {
           <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">Rental deposit protection</p>
           <h1 className="mt-1 text-2xl font-semibold text-[var(--text-primary)]">{pageTitle(pathname)}</h1>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Signed in as <span className="font-semibold text-[var(--text-primary)]">{session.name}</span> with the{" "}
+            Signed in as <span className="font-semibold text-[var(--text-primary)]">{displayName}</span> with the{" "}
             {session.role.toLowerCase()} lens.
           </p>
         </div>

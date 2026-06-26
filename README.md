@@ -1,100 +1,74 @@
 # RentDeposit Shield
 
-Rental deposit protection infrastructure powered by Stellar + Soroban.
+Rental deposit workflow MVP built as a single Next.js app with real Stellar testnet wallet signing and Soroban contract interactions.
 
-## Problem
+## What it does
 
-Rental deposit disputes usually break down into screenshots, off-platform transfers, no shared evidence timeline and no neutral release workflow.
+- landlord connects Freighter or Rabet
+- landlord creates a case, which deploys a fresh Soroban contract instance
+- tenant funds the case on-chain
+- tenant / landlord confirm move-in, request refund, propose deductions, open disputes
+- mediator resolves the dispute on-chain
+- the app syncs tx hashes and resulting statuses into its Neon-backed audit workspace
 
-## Solution
-
-RentDeposit Shield is a production-style MVP that keeps the escrow case lifecycle in one Next.js app:
-
-- landlord creates a case
-- tenant funds the deposit
-- both sides upload move-in and move-out evidence
-- landlord approves refund or proposes a deduction
-- tenant accepts or opens a dispute
-- mediator resolves the split
-- analytics, monitoring, wallet proof and feedback stay visible in-product
-
-## Why Stellar
-
-- Stellar testnet is fast and cheap for demo settlement flows
-- Soroban is a strong fit for escrow state transitions and role-based release logic
-- transaction hashes and contract addresses are easy to surface to users
+There is no separate backend service. UI, API routes, Neon persistence, wallet integration and contract orchestration all live in this repo.
 
 ## Stack
 
-- Next.js 16 + TypeScript + App Router
+- Next.js 16 + App Router + TypeScript
 - Tailwind CSS v4
-- Recharts
 - SWR
 - Zod
 - Sonner
-- Soroban smart contract in Rust
+- Recharts
+- Stellar Wallets Kit
+- `@stellar/stellar-sdk`
+- Soroban contract in Rust
 
-## Architecture Overview
+## Soroban contract
 
-This repo intentionally keeps frontend and backend together.
+Contract path:
 
-- UI pages live in `src/app/*`
-- route handlers live in `src/app/api/*`
-- local demo persistence uses `data/app-db.json`
-- domain logic lives in `src/lib/domain/*`
-- server repository and summaries live in `src/lib/server/*`
-- Stellar wallet and contract client wrappers live in `src/lib/stellar/*`
-- Soroban contract lives in `contracts/rent_deposit_escrow`
+- `contracts/rent_deposit_escrow`
 
-The app is a single Next.js deployment. There is no separate backend service.
+Current build hash:
 
-## Smart Contract Overview
+- `8ee4b8a385e881101f3e65074043a9b5e6e06fe5b962a30338181b8f7ebe4b8e`
 
-Contract name: `rent_deposit_escrow`
+The contract stores the case state machine on-chain and enforces actor auth with `require_auth()`.
 
-Implemented in Rust with Soroban SDK as a role-gated escrow state machine. For testability, auth-sensitive methods accept an `actor: Address` parameter and validate it against the stored tenant, landlord or mediator address.
-
-Implemented contract functions:
+Implemented methods:
 
 - `initialize_case`
-- `fund_deposit(actor, amount)`
-- `confirm_move_in(actor)`
-- `request_refund(actor)`
-- `approve_full_refund(actor)`
-- `propose_deduction(actor, deduction_amount, reason_hash)`
-- `accept_deduction(actor)`
-- `open_dispute(actor, reason_hash)`
-- `resolve_dispute(actor, tenant_amount, landlord_amount, resolution_hash)`
+- `fund_deposit`
+- `confirm_move_in`
+- `request_refund`
+- `approve_full_refund`
+- `propose_deduction`
+- `accept_deduction`
+- `open_dispute`
+- `resolve_dispute`
+- `close_case`
 - `get_case`
-- `close_case(actor)`
 
-Contract deployment address placeholder:
+## Wallet support
 
-- `CD7MRENTDEPOSITESCROWTESTNETPLACEHOLDER000000000000`
+The app supports only:
 
-## Features
+- Freighter
+- Rabet
 
-- Landing page with Stellar positioning and testnet disclaimer
-- Onboarding flow with role selection and wallet connection
-- Dashboard metrics and recent activity
-- Cases list, search and status filter
-- Create case form
-- Case detail page with evidence gallery, checklist, action panel and audit timeline
-- Dispute resolution workspace
-- Analytics page
-- Feedback collection and summary
-- Submission evidence page
-- Custom monitoring/error logging
-- Demo seed data with 10+ wallet proof interactions
-- Reset API for local testing
+There is no mock wallet fallback anymore.
 
-## Local Setup
+## Local setup
 
 Requirements:
 
 - Node.js 24+
 - npm 11+
-- Rust + Cargo if you want to run Soroban contract tests
+- Rust + Cargo
+- Stellar CLI (`stellar`)
+- Freighter or Rabet installed in the browser you will test with
 
 Install dependencies:
 
@@ -102,9 +76,7 @@ Install dependencies:
 npm install
 ```
 
-## Running the App
-
-Start local development:
+Start the app:
 
 ```bash
 npm run dev
@@ -114,7 +86,90 @@ Open:
 
 - `http://localhost:3000`
 
-Useful routes:
+## Testnet prep
+
+1. Switch Freighter or Rabet to Stellar Testnet.
+2. Fund the wallets you want to use with Friendbot.
+3. Use one landlord wallet, one tenant wallet and one mediator wallet for the full flow.
+
+Friendbot:
+
+- `https://friendbot.stellar.org`
+
+## Scripts
+
+App quality:
+
+```bash
+npm run typecheck
+npm run test
+npm run build
+```
+
+Contract quality:
+
+```bash
+cargo test --manifest-path contracts/Cargo.toml
+npm run stellar:build
+```
+
+Install contract code on testnet:
+
+```bash
+npm run stellar:install-code
+```
+
+Optional: write the installed hash into `.env.local`:
+
+```bash
+npm run stellar:install-code -- --write-env
+```
+
+Run the real on-chain end-to-end flow:
+
+```bash
+npm run stellar:onchain:test
+```
+
+That script:
+
+- builds the contract
+- funds fresh testnet accounts through Friendbot
+- uploads the Wasm to testnet
+- deploys a fresh contract instance
+- runs `initialize_case -> fund_deposit -> confirm_move_in -> request_refund -> propose_deduction -> open_dispute -> resolve_dispute`
+
+## Environment
+
+The app has working defaults for Stellar testnet, but you can override them in `.env.local`.
+
+See [.env.example](.env.example).
+
+## Database
+
+Server-side app state now persists in Neon Postgres through `DATABASE_URL`.
+
+Set this in `.env.local`:
+
+```bash
+DATABASE_URL="postgresql://username:password@your-neon-endpoint-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+```
+
+Quick connectivity check:
+
+```bash
+npm run db:check
+```
+
+The workspace starts empty by default. No seeded demo wallets or fake cases are injected.
+
+Reset the Neon-backed workspace:
+
+```bash
+curl -X POST http://localhost:3000/api/dev/reset
+```
+
+## Main routes
 
 - `/`
 - `/onboarding`
@@ -126,120 +181,22 @@ Useful routes:
 - `/feedback`
 - `/submission`
 
-Reset demo data:
+## Current behavior
 
-```bash
-curl -X POST http://localhost:3000/api/dev/reset
-```
+- wallet connect is real
+- contract deployment is real
+- Soroban method calls are real
+- tx hashes shown in the app come from successful testnet transactions
+- Next.js API routes only sync app state after on-chain execution succeeds
 
-## Environment Variables
+## Known limitations
 
-This local MVP does not require mandatory env vars to boot.
+- the contract currently models escrow state transitions, not live token custody
+- evidence uploads are local metadata only
+- persistence currently uses a single JSONB application-state row in Neon to keep the existing domain engine intact
+- the submission page still depends on actions you perform locally to accumulate proof data
+- multi-user concurrency is not implemented beyond wallet switching in the same app
 
-Optional future variables:
+## Repo
 
-```bash
-NEXT_PUBLIC_STELLAR_NETWORK=testnet
-NEXT_PUBLIC_SENTRY_DSN=
-NEXT_PUBLIC_ANALYTICS_PROVIDER=
-```
-
-## Scripts
-
-```bash
-npm run dev
-npm run typecheck
-npm run lint
-npm run test
-npm run build
-```
-
-Contract tests:
-
-```bash
-cargo test --manifest-path contracts/Cargo.toml
-```
-
-## Demo Flow
-
-1. Open `/`.
-2. Go to `/onboarding`.
-3. Choose `LANDLORD`.
-4. Connect a wallet or use the mock fallback.
-5. Create a new case at `/cases/new`.
-6. Switch role to `TENANT`.
-7. Open the created case and fund the deposit.
-8. Upload move-in evidence and confirm move-in.
-9. Upload move-out evidence and request refund.
-10. Switch back to `LANDLORD` and propose a deduction or approve refund.
-11. Switch to `TENANT` and accept or open dispute.
-12. Switch to `MEDIATOR` and resolve the dispute.
-13. Inspect `/analytics`, `/feedback` and `/submission`.
-
-## Analytics and Monitoring
-
-Tracked event families include:
-
-- page views
-- onboarding completion
-- wallet connections
-- case creation
-- deposit funded
-- refund requested
-- deduction proposed and accepted
-- dispute opened and resolved
-- feedback submitted
-- submission page viewed
-
-Monitoring is implemented as a custom error log surfaced in the UI and populated by API, wallet and contract-path failures.
-
-## User Validation Proof
-
-Seed data includes:
-
-- 10 unique wallet interaction proofs
-- feedback samples
-- submission summary cards
-
-This is a collection mechanism for local/demo workflows until real user data is added.
-
-## Screenshots Checklist
-
-- Landing page desktop
-- Dashboard overview
-- Case detail timeline
-- Mediator dispute panel
-- Mobile responsive cases list
-
-## Demo Video
-
-Placeholder:
-
-- `https://example.com/demo-video-placeholder`
-
-## Compliance Notes
-
-- testnet only
-- no real money
-- not a licensed escrow service
-- not a legal contract replacement
-- mainnet launch would require legal review
-- fiat on/off-ramp would require licensed partners or Stellar Anchors
-- evidence files may contain personal data and need privacy controls in production
-
-## Known Limitations
-
-- Stellar wallet integration falls back to a mock wallet when Freighter is unavailable
-- contract deployment address is still a placeholder
-- local persistence uses a JSON file instead of a production database
-- seeded analytics and validation proof are demo data
-- commit-count status is not auto-derived inside the UI yet
-
-## Roadmap
-
-- connect real Stellar testnet token flows
-- deploy and wire the Soroban contract end to end
-- add auth and multi-user persistence
-- upload real files to object storage
-- add Sentry or another hosted monitoring backend
-- publish a live demo deployment
+- `https://github.com/yuxinNgo/RentDeposit-Shieldd`

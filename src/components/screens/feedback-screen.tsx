@@ -22,7 +22,7 @@ export function FeedbackScreen() {
   return (
     <div className="space-y-6">
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard icon={MessagesSquare} label="Responses" value={String(data.feedbackSummary.totalResponses)} description="Combined seeded and local feedback submissions." />
+        <MetricCard icon={MessagesSquare} label="Responses" value={String(data.feedbackSummary.totalResponses)} description="Feedback submissions captured in this workspace." />
         <MetricCard icon={SmilePlus} label="Average rating" value={String(data.feedbackSummary.averageRating)} description="Mean score from 1 to 5." />
         <MetricCard icon={Vote} label="Would-use" value={`${data.feedbackSummary.wouldUsePercentage}%`} description="Participants who would try a real version later." />
         <MetricCard icon={ThumbsUp} label="Top theme" value={data.feedbackSummary.positiveThemes[0]?.label ?? "audit"} description="Most common positive feedback token." />

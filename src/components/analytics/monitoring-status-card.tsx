@@ -16,7 +16,7 @@ export function MonitoringStatusCard({ monitoring }: { monitoring: MonitoringSum
         <div>
           <p className="text-sm font-semibold text-[var(--text-primary)]">Monitoring status</p>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Custom error logging captures wallet, contract and API issues during the demo.
+            Custom error logging captures wallet, contract and API issues across the local app runtime.
           </p>
         </div>
         {monitoring.health === "healthy" ? (
