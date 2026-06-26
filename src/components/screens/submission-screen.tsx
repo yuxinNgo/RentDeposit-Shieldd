@@ -75,8 +75,10 @@ export function SubmissionScreen() {
             <GitCommitHorizontal className="h-5 w-5 text-[var(--amber)]" />
             <p className="text-sm font-semibold text-[var(--text-primary)]">Commit readiness</p>
           </div>
-          <p className="text-3xl font-semibold text-[var(--text-primary)]">{data.submission.commitsReady ? "Ready" : "Pending"}</p>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">Manual review still needed for the 15+ commit requirement.</p>
+          <p className="text-3xl font-semibold text-[var(--text-primary)]">{data.submission.commitCount}</p>
+          <p className="mt-2 text-sm text-[var(--text-secondary)]">
+            {data.submission.commitsReady ? "15+ meaningful commits recorded in git history." : "Need at least 15 meaningful commits in git history."}
+          </p>
         </Card>
       </section>
 
@@ -93,7 +95,7 @@ export function SubmissionScreen() {
         </Card>
 
         <Card>
-          <p className="mb-4 text-sm font-semibold text-[var(--text-primary)]">10-user proof list</p>
+          <p className="mb-4 text-sm font-semibold text-[var(--text-primary)]">Wallet proof list</p>
           {data.submission.proofUsers.length === 0 ? (
             <EmptyState
               title="No proof wallets yet"

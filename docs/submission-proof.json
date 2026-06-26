@@ -1,0 +1,222 @@
+{
+  "generatedAt": "2026-06-26T04:08:40.392Z",
+  "baseUrl": "http://127.0.0.1:3000",
+  "contract": {
+    "caseId": "case_e68de6cca91a",
+    "contractAddress": "CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW",
+    "creationTxHash": "c58654dd82c6e493eb5ad21bc486d6f9aa9a5f90c632e18866acf7a89c48745b",
+    "fundedTxHash": "6b54d3ab274f3f6ce9b63934d9e2a7862fd9bf126cd59bd8037fab55e83923af",
+    "moveInTxHash": "3c17f339a8fc93f8f34a955158d83d6c94703de87d5e7bf3ffbe8efe0472d140"
+  },
+  "participantCount": 12,
+  "participants": [
+    {
+      "role": "MEDIATOR",
+      "name": "Proof mediator 12",
+      "walletAddress": "GCLTB6F3VTZNQM4JPINUV5CV55YMTJ4SHXIUFMAGMW6S4BZPTGNVZ3DE"
+    },
+    {
+      "role": "TENANT",
+      "name": "Proof tenant 11",
+      "walletAddress": "GBERIBK3JUL4LFDQGFLSRTPNLA6PA35CQ7EMNIZSD6HH6AQBB6VS5ZOZ"
+    },
+    {
+      "role": "LANDLORD",
+      "name": "Proof landlord 10",
+      "walletAddress": "GBV3CFBB3GXB7SOYGVIEFT2GEKJ75EBDOZECN46B3BITEVCOKX3ZKVOA"
+    },
+    {
+      "role": "MEDIATOR",
+      "name": "Proof mediator 9",
+      "walletAddress": "GAO6L5BK3ZPQ54PYFBCD43R5CT2G3UW375CGHJSUJMTKHZ6CK2CXRPZI"
+    },
+    {
+      "role": "TENANT",
+      "name": "Proof tenant 8",
+      "walletAddress": "GDBTQNI6CUPIGJCFXC54D6TXSCAP7UJTB2CKXYNYRTUYRO2EMM4Q3JJD"
+    },
+    {
+      "role": "LANDLORD",
+      "name": "Proof landlord 7",
+      "walletAddress": "GCR45LCXSA4F2FXLPEFWLWB4YRUQGHMF74B34MLS6GR72KM2HRWWFUX3"
+    },
+    {
+      "role": "MEDIATOR",
+      "name": "Proof mediator 6",
+      "walletAddress": "GCQYXYDW7VFCWFBFQWTZDAMRUBLFILA37ASIIDW6GRL5JJZQADL3EXQD"
+    },
+    {
+      "role": "TENANT",
+      "name": "Proof tenant 5",
+      "walletAddress": "GDA5SL3SM4WDMG3YHPSFNO4A5OHAURJ5AP7OTVUGGICN3ZP5O5LB5LQX"
+    },
+    {
+      "role": "LANDLORD",
+      "name": "Proof landlord 4",
+      "walletAddress": "GCPCQAST2TGULIM24FKEUK3M7CLHEWRS76NDXG32VZ3GL2PU6LCHLCOX"
+    },
+    {
+      "role": "MEDIATOR",
+      "name": "Proof mediator 3",
+      "walletAddress": "GBNY6MPRM2FFEPXGIJ4J73QUIQECS5GD4SHJHJ6P72HYHWKRPRY5625E"
+    },
+    {
+      "role": "TENANT",
+      "name": "Proof tenant 2",
+      "walletAddress": "GBBDUOO2XMOCW4BGYTMWJBVXHRWZUWOKYGPBHJZ6CY5J5K3GZGHV5OKT"
+    },
+    {
+      "role": "LANDLORD",
+      "name": "Proof landlord 1",
+      "walletAddress": "GDOFNAHR3KRKXAZLUZ7435PD2ZFADTD4CYB2VBSOLB3IDAOMCDG642JZ"
+    }
+  ],
+  "submission": {
+    "repoUrl": "https://github.com/yuxinNgo/RentDeposit-Shieldd",
+    "contractAddress": "CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW",
+    "totalOnboardedUsers": 12,
+    "uniqueWalletAddresses": 12,
+    "proofUsers": [
+      {
+        "walletAddress": "GBBDUOO2XMOCW4BGYTMWJBVXHRWZUWOKYGPBHJZ6CY5J5K3GZGHV5OKT",
+        "role": "TENANT",
+        "connectedAt": "2026-06-26T03:57:18.204Z",
+        "lastAction": "confirm_move_in",
+        "txHash": "3c17f339a8fc93f8f34a955158d83d6c94703de87d5e7bf3ffbe8efe0472d140",
+        "feedbackSubmitted": true
+      },
+      {
+        "walletAddress": "GDOFNAHR3KRKXAZLUZ7435PD2ZFADTD4CYB2VBSOLB3IDAOMCDG642JZ",
+        "role": "LANDLORD",
+        "connectedAt": "2026-06-26T03:56:59.190Z",
+        "lastAction": "case_created",
+        "txHash": "c58654dd82c6e493eb5ad21bc486d6f9aa9a5f90c632e18866acf7a89c48745b",
+        "feedbackSubmitted": true
+      },
+      {
+        "walletAddress": "GCLTB6F3VTZNQM4JPINUV5CV55YMTJ4SHXIUFMAGMW6S4BZPTGNVZ3DE",
+        "role": "MEDIATOR",
+        "connectedAt": "2026-06-26T03:56:40.137Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": false
+      },
+      {
+        "walletAddress": "GBERIBK3JUL4LFDQGFLSRTPNLA6PA35CQ7EMNIZSD6HH6AQBB6VS5ZOZ",
+        "role": "TENANT",
+        "connectedAt": "2026-06-26T03:56:39.146Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": false
+      },
+      {
+        "walletAddress": "GBV3CFBB3GXB7SOYGVIEFT2GEKJ75EBDOZECN46B3BITEVCOKX3ZKVOA",
+        "role": "LANDLORD",
+        "connectedAt": "2026-06-26T03:56:38.172Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": false
+      },
+      {
+        "walletAddress": "GAO6L5BK3ZPQ54PYFBCD43R5CT2G3UW375CGHJSUJMTKHZ6CK2CXRPZI",
+        "role": "MEDIATOR",
+        "connectedAt": "2026-06-26T03:56:37.199Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": false
+      },
+      {
+        "walletAddress": "GDBTQNI6CUPIGJCFXC54D6TXSCAP7UJTB2CKXYNYRTUYRO2EMM4Q3JJD",
+        "role": "TENANT",
+        "connectedAt": "2026-06-26T03:56:36.220Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": true
+      },
+      {
+        "walletAddress": "GCR45LCXSA4F2FXLPEFWLWB4YRUQGHMF74B34MLS6GR72KM2HRWWFUX3",
+        "role": "LANDLORD",
+        "connectedAt": "2026-06-26T03:56:35.222Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": true
+      },
+      {
+        "walletAddress": "GCQYXYDW7VFCWFBFQWTZDAMRUBLFILA37ASIIDW6GRL5JJZQADL3EXQD",
+        "role": "MEDIATOR",
+        "connectedAt": "2026-06-26T03:56:34.231Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": true
+      },
+      {
+        "walletAddress": "GDA5SL3SM4WDMG3YHPSFNO4A5OHAURJ5AP7OTVUGGICN3ZP5O5LB5LQX",
+        "role": "TENANT",
+        "connectedAt": "2026-06-26T03:56:33.246Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": true
+      },
+      {
+        "walletAddress": "GCPCQAST2TGULIM24FKEUK3M7CLHEWRS76NDXG32VZ3GL2PU6LCHLCOX",
+        "role": "LANDLORD",
+        "connectedAt": "2026-06-26T03:56:32.271Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": true
+      },
+      {
+        "walletAddress": "GBNY6MPRM2FFEPXGIJ4J73QUIQECS5GD4SHJHJ6P72HYHWKRPRY5625E",
+        "role": "MEDIATOR",
+        "connectedAt": "2026-06-26T03:56:31.296Z",
+        "lastAction": "wallet_connected",
+        "feedbackSubmitted": true
+      }
+    ]
+  },
+  "analytics": {
+    "totals": {
+      "feedback_submitted": 8,
+      "move_in_confirmed": 1,
+      "move_in_evidence_uploaded": 1,
+      "deposit_funded": 1,
+      "case_created": 1,
+      "wallet_connected": 12
+    },
+    "totalCases": 1,
+    "fundedCases": 1,
+    "walletInteractions": 15
+  },
+  "feedback": {
+    "totalResponses": 8,
+    "averageRating": 4.6,
+    "positiveThemes": [
+      {
+        "label": "wallet",
+        "count": 8
+      },
+      {
+        "label": "connection",
+        "count": 8
+      },
+      {
+        "label": "audit",
+        "count": 8
+      },
+      {
+        "label": "trail",
+        "count": 8
+      }
+    ],
+    "confusingThemes": [
+      {
+        "label": "clearer",
+        "count": 8
+      },
+      {
+        "label": "around",
+        "count": 8
+      },
+      {
+        "label": "evidence",
+        "count": 8
+      },
+      {
+        "label": "timing",
+        "count": 8
+      }
+    ],
+    "wouldUsePercentage": 100
+  }
+}

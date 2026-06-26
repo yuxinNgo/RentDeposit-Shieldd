@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { buildCaseRecord } from "@/lib/domain/case-machine";
 import type {
   AnalyticsSummary,
@@ -105,11 +106,26 @@ function buildProofUsers(db: AppDatabase): ProofUser[] {
     });
   }
 
-  return proofUsers.slice(0, 10);
+  return proofUsers.slice(0, 12);
+}
+
+function getCommitCount() {
+  try {
+    const count = execFileSync("git", ["rev-list", "--count", "HEAD"], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    const parsed = Number.parseInt(count, 10);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  } catch {
+    return 0;
+  }
 }
 
 function buildSubmission(db: AppDatabase): SubmissionSummary {
   const uniqueWalletAddresses = new Set(db.walletInteractions.map((entry) => entry.walletAddress));
+  const commitCount = getCommitCount();
 
   return {
     repoUrl: db.submissionMeta.publicRepoUrl,
@@ -119,7 +135,8 @@ function buildSubmission(db: AppDatabase): SubmissionSummary {
     analyticsReady: db.analyticsEvents.length > 0,
     monitoringReady: db.errorLogs.length >= 0,
     readmeReady: true,
-    commitsReady: false,
+    commitCount,
+    commitsReady: commitCount >= 15,
     screenshotsChecklist: db.submissionMeta.screenshotsChecklist,
     totalOnboardedUsers: db.users.filter((entry) => entry.onboardingCompleted).length,
     uniqueWalletAddresses: uniqueWalletAddresses.size,

@@ -14,7 +14,7 @@ export function createSeedData(): AppDatabase {
     errorLogs: [],
     submissionMeta: {
       publicRepoUrl: "https://github.com/yuxinNgo/RentDeposit-Shieldd",
-      liveDemoUrl: "http://localhost:3000",
+      liveDemoUrl: "",
       contractDeploymentAddress: "",
       demoVideoUrl: "",
       screenshotsChecklist: [

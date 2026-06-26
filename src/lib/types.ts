@@ -223,6 +223,7 @@ export interface SubmissionSummary {
   analyticsReady: boolean;
   monitoringReady: boolean;
   readmeReady: boolean;
+  commitCount: number;
   commitsReady: boolean;
   screenshotsChecklist: string[];
   totalOnboardedUsers: number;

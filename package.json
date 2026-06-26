@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:check": "tsx scripts/db/check-neon.ts",
+    "submission:populate": "tsx scripts/submission/populate-proof.ts",
     "stellar:build": "stellar contract build --manifest-path contracts/rent_deposit_escrow/Cargo.toml",
     "stellar:install-code": "tsx scripts/stellar/install-contract-code.ts",
     "stellar:onchain:test": "tsx scripts/stellar/onchain-e2e.ts"
