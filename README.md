@@ -193,7 +193,7 @@ Open `http://localhost:3000`.
 This repo is prepared for Railway deployment.
 
 - `next.config.ts` uses `output: "standalone"` for self-hosted Next.js builds.
-- `npm run start` serves the standalone server.
+- `npm run start` serves the standalone server through a wrapper that forces bind host `0.0.0.0`, which is important for Railway-style container environments.
 - `railway.toml` defines the build command, start command, restart policy, and a healthcheck path at `/api/health`.
 
 ### Railway steps

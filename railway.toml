@@ -2,7 +2,7 @@
 buildCommand = "npm run build"
 
 [deploy]
-startCommand = "node .next/standalone/server.js"
+startCommand = "node scripts/start-standalone.mjs"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
