@@ -53,7 +53,7 @@ RentDeposit Shield is a production-oriented Stellar testnet rental escrow worksp
 - Tailwind CSS v4
 - SWR for client data refresh
 - Recharts for analytics
-- Stellar Wallets Kit for Freighter and Rabet integration
+- Direct Freighter and Rabet integration without hardware-wallet bundles
 
 ### Smart Contract
 
@@ -82,6 +82,7 @@ RentDeposit Shield is a production-oriented Stellar testnet rental escrow worksp
 
 - Railway hosts the Next.js standalone server
 - `railway.toml` defines build and deploy settings
+- `nixpacks.toml` forces Railway to install from the committed lockfile with `npm ci`
 - `npm run build` prepares standalone output and copies required static assets
 - `npm run start` binds the standalone server correctly for container environments
 - Railway healthchecks the app through `/api/health`
