@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import {
   acceptDeductionOnChain,
   approveFullRefundOnChain,
+  closeCaseOnChain,
   confirmMoveInOnChain,
   fundDepositOnChain,
   openDisputeOnChain,
@@ -38,6 +39,7 @@ export function ActionPanel({
   const canProposeDeduction = session.role === "LANDLORD" && caseRecord.status === "REFUND_REQUESTED";
   const canAcceptDeduction = session.role === "TENANT" && caseRecord.status === "DEDUCTION_PROPOSED";
   const canOpenDispute = ["TENANT", "LANDLORD"].includes(session.role) && ["REFUND_REQUESTED", "DEDUCTION_PROPOSED"].includes(caseRecord.status);
+  const canCloseCase = ["LANDLORD", "MEDIATOR"].includes(session.role) && ["REFUNDED", "PARTIALLY_REFUNDED", "RELEASED_TO_LANDLORD"].includes(caseRecord.status);
 
   const availableActions = useMemo(
     () =>
@@ -49,8 +51,9 @@ export function ActionPanel({
         canProposeDeduction && "Propose deduction",
         canAcceptDeduction && "Accept deduction",
         canOpenDispute && "Open dispute",
+        canCloseCase && "Close case",
       ].filter(Boolean) as string[],
-    [canFund, canConfirmMoveIn, canRequestRefund, canApproveRefund, canProposeDeduction, canAcceptDeduction, canOpenDispute],
+    [canFund, canConfirmMoveIn, canRequestRefund, canApproveRefund, canProposeDeduction, canAcceptDeduction, canOpenDispute, canCloseCase],
   );
 
   async function run(action: () => Promise<{ success: boolean; errorMessage?: string }>, successMessage: string) {
@@ -81,8 +84,8 @@ export function ActionPanel({
             onClick={() =>
               startTransition(() => {
                 void run(
-                  () => fundDepositOnChain(caseRecord.id, "TENANT", session.walletAddress),
-                  "Deposit funded on demo testnet.",
+                  () => fundDepositOnChain(caseRecord, "TENANT", session.walletAddress),
+                  "Deposit funded on Stellar testnet.",
                 );
               })
             }
@@ -97,7 +100,7 @@ export function ActionPanel({
             onClick={() =>
               startTransition(() => {
                 void run(
-                  () => confirmMoveInOnChain(caseRecord.id, session.role as "TENANT" | "LANDLORD", session.walletAddress),
+                  () => confirmMoveInOnChain(caseRecord, session.role as "TENANT" | "LANDLORD", session.walletAddress),
                   "Move-in confirmed.",
                 );
               })
@@ -112,7 +115,7 @@ export function ActionPanel({
             disabled={isPending || !session.walletAddress}
             onClick={() =>
               startTransition(() => {
-                void run(() => requestRefundOnChain(caseRecord.id, session.walletAddress), "Refund requested.");
+                void run(() => requestRefundOnChain(caseRecord, session.walletAddress), "Refund requested.");
               })
             }
           >
@@ -124,7 +127,7 @@ export function ActionPanel({
             disabled={isPending || !session.walletAddress}
             onClick={() =>
               startTransition(() => {
-                void run(() => approveFullRefundOnChain(caseRecord.id, session.walletAddress), "Full refund approved.");
+                void run(() => approveFullRefundOnChain(caseRecord, session.walletAddress), "Full refund approved on-chain.");
               })
             }
           >
@@ -137,11 +140,27 @@ export function ActionPanel({
             disabled={isPending || !session.walletAddress}
             onClick={() =>
               startTransition(() => {
-                void run(() => acceptDeductionOnChain(caseRecord.id, session.walletAddress), "Deduction accepted.");
+                void run(() => acceptDeductionOnChain(caseRecord, session.walletAddress), "Deduction accepted on-chain.");
               })
             }
           >
             Accept deduction
+          </Button>
+        ) : null}
+        {canCloseCase ? (
+          <Button
+            variant="secondary"
+            disabled={isPending || !session.walletAddress}
+            onClick={() =>
+              startTransition(() => {
+                void run(
+                  () => closeCaseOnChain(caseRecord, session.role as "LANDLORD" | "MEDIATOR", session.walletAddress),
+                  "Case closed on-chain.",
+                );
+              })
+            }
+          >
+            Close case
           </Button>
         ) : null}
       </div>
@@ -158,7 +177,7 @@ export function ActionPanel({
               onClick={() =>
                 startTransition(() => {
                   void run(
-                    () => proposeDeductionOnChain(caseRecord.id, session.walletAddress, deductionAmount, deductionReason),
+                    () => proposeDeductionOnChain(caseRecord, session.walletAddress, deductionAmount, deductionReason),
                     "Deduction proposed.",
                   );
                 })
@@ -181,7 +200,7 @@ export function ActionPanel({
               onClick={() =>
                 startTransition(() => {
                   void run(
-                    () => openDisputeOnChain(caseRecord.id, session.role as "TENANT" | "LANDLORD", session.walletAddress, disputeReason),
+                    () => openDisputeOnChain(caseRecord, session.role as "TENANT" | "LANDLORD", session.walletAddress, disputeReason),
                     "Dispute opened.",
                   );
                 })

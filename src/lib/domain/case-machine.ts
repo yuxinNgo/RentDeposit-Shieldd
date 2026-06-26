@@ -1,11 +1,10 @@
-import { DEMO_CONTRACT_ADDRESS } from "@/lib/constants";
-import { createMockHash } from "@/lib/utils";
 import type {
   AnalyticsEvent,
   AppDatabase,
   AuditLog,
   CaseRecord,
   DeductionProposal,
+  DepositCaseStatus,
   Dispute,
   EvidenceFile,
   RentalDepositCase,
@@ -18,6 +17,8 @@ type ActionInput =
       type: "FUND_DEPOSIT";
       actorRole: "TENANT";
       actorWallet: string;
+      txHash: string;
+      resultingStatus: "FUNDED";
     }
   | {
       type: "UPLOAD_EVIDENCE";
@@ -32,16 +33,22 @@ type ActionInput =
       type: "CONFIRM_MOVE_IN";
       actorRole: "TENANT" | "LANDLORD";
       actorWallet: string;
+      txHash: string;
+      resultingStatus: "MOVE_IN_CONFIRMED";
     }
   | {
       type: "REQUEST_REFUND";
       actorRole: "TENANT";
       actorWallet: string;
+      txHash: string;
+      resultingStatus: "REFUND_REQUESTED";
     }
   | {
       type: "APPROVE_FULL_REFUND";
       actorRole: "LANDLORD";
       actorWallet: string;
+      txHash: string;
+      resultingStatus: "REFUNDED";
     }
   | {
       type: "PROPOSE_DEDUCTION";
@@ -50,17 +57,23 @@ type ActionInput =
       amount: number;
       reason: string;
       evidenceIds: string[];
+      txHash: string;
+      resultingStatus: "DEDUCTION_PROPOSED";
     }
   | {
       type: "ACCEPT_DEDUCTION";
       actorRole: "TENANT";
       actorWallet: string;
+      txHash: string;
+      resultingStatus: "PARTIALLY_REFUNDED" | "RELEASED_TO_LANDLORD";
     }
   | {
       type: "OPEN_DISPUTE";
       actorRole: "TENANT" | "LANDLORD";
       actorWallet: string;
       reason: string;
+      txHash: string;
+      resultingStatus: "DISPUTED";
     }
   | {
       type: "RESOLVE_DISPUTE";
@@ -69,6 +82,15 @@ type ActionInput =
       tenantAmount: number;
       landlordAmount: number;
       resolutionNote: string;
+      txHash: string;
+      resultingStatus: "CLOSED";
+    }
+  | {
+      type: "CLOSE_CASE";
+      actorRole: "LANDLORD" | "MEDIATOR";
+      actorWallet: string;
+      txHash: string;
+      resultingStatus: "CLOSED";
     };
 
 export interface ActionResult {
@@ -120,6 +142,7 @@ function recordWalletInteraction(
   walletAddress: string,
   action: string,
   success: boolean,
+  contractAddress?: string,
   caseId?: string,
   txHash?: string,
   errorMessage?: string,
@@ -129,7 +152,7 @@ function recordWalletInteraction(
     walletAddress,
     action,
     txHash,
-    contractAddress: DEMO_CONTRACT_ADDRESS,
+    contractAddress,
     caseId,
     success,
     errorMessage,
@@ -178,7 +201,7 @@ function createEvidence(
     fileName,
     description,
     fileUrl: `/evidence/${fileName.replaceAll(" ", "-").toLowerCase()}`,
-    fileHash: createMockHash("evidence"),
+    fileHash: crypto.randomUUID().replaceAll("-", ""),
     uploadedByRole: actorRole,
     uploadedByWallet: actorWallet,
     createdAt: now(),
@@ -204,6 +227,17 @@ function assertStatus(
 
   if (!allowedStatuses.includes(current)) {
     throw new Error(`Invalid status transition from ${current}.`);
+  }
+}
+
+function assertResultingStatus(
+  actual: DepositCaseStatus,
+  expected: DepositCaseStatus | DepositCaseStatus[],
+) {
+  const allowed = Array.isArray(expected) ? expected : [expected];
+
+  if (!allowed.includes(actual)) {
+    throw new Error(`Unexpected on-chain status ${actual}.`);
   }
 }
 
@@ -268,16 +302,24 @@ export function performCaseAction(db: AppDatabase, caseId: string, actionInput: 
   if (actionInput.type === "FUND_DEPOSIT") {
     assertRole(actionInput.actorRole, "TENANT");
     assertStatus(targetCase.status, "CREATED");
-    const txHash = createMockHash("fund");
-    targetCase.status = "FUNDED";
-    targetCase.fundTxHash = txHash;
+    assertResultingStatus(actionInput.resultingStatus, "FUNDED");
+    targetCase.status = actionInput.resultingStatus;
+    targetCase.fundTxHash = actionInput.txHash;
     targetCase.updatedAt = timestamp;
-    recordAudit(db, caseId, actionInput.actorRole, actionInput.actorWallet, "FUND_DEPOSIT", "Tenant funded the deposit into escrow.", txHash);
-    recordWalletInteraction(db, actionInput.actorWallet, "fund_deposit", true, caseId, txHash);
+    recordAudit(
+      db,
+      caseId,
+      actionInput.actorRole,
+      actionInput.actorWallet,
+      "FUND_DEPOSIT",
+      "Tenant funded the deposit into escrow.",
+      actionInput.txHash,
+    );
+    recordWalletInteraction(db, actionInput.actorWallet, "fund_deposit", true, targetCase.contractAddress, caseId, actionInput.txHash);
     recordEvent(db, "deposit_funded", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`, {
       amount: targetCase.depositAmount,
     });
-    return { case: targetCase, txHash };
+    return { case: targetCase, txHash: actionInput.txHash };
   }
 
   if (actionInput.type === "CONFIRM_MOVE_IN") {
@@ -289,10 +331,21 @@ export function performCaseAction(db: AppDatabase, caseId: string, actionInput: 
       throw new Error("Upload at least one move-in evidence file first.");
     }
 
-    targetCase.status = "MOVE_IN_CONFIRMED";
+    assertResultingStatus(actionInput.resultingStatus, "MOVE_IN_CONFIRMED");
+    targetCase.status = actionInput.resultingStatus;
     targetCase.updatedAt = timestamp;
-    recordAudit(db, caseId, actionInput.actorRole, actionInput.actorWallet, "CONFIRM_MOVE_IN", "Move-in condition confirmed and escrow is active.");
-    return { case: targetCase };
+    recordAudit(
+      db,
+      caseId,
+      actionInput.actorRole,
+      actionInput.actorWallet,
+      "CONFIRM_MOVE_IN",
+      "Move-in condition confirmed and escrow is active.",
+      actionInput.txHash,
+    );
+    recordWalletInteraction(db, actionInput.actorWallet, "confirm_move_in", true, targetCase.contractAddress, caseId, actionInput.txHash);
+    recordEvent(db, "move_in_confirmed", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`);
+    return { case: targetCase, txHash: actionInput.txHash };
   }
 
   if (actionInput.type === "REQUEST_REFUND") {
@@ -304,26 +357,52 @@ export function performCaseAction(db: AppDatabase, caseId: string, actionInput: 
       throw new Error("Upload move-out evidence before requesting a refund.");
     }
 
-    targetCase.status = "REFUND_REQUESTED";
+    assertResultingStatus(actionInput.resultingStatus, "REFUND_REQUESTED");
+    targetCase.status = actionInput.resultingStatus;
     targetCase.updatedAt = timestamp;
-    recordAudit(db, caseId, actionInput.actorRole, actionInput.actorWallet, "REQUEST_REFUND", "Tenant requested the return of the deposit.");
+    recordAudit(
+      db,
+      caseId,
+      actionInput.actorRole,
+      actionInput.actorWallet,
+      "REQUEST_REFUND",
+      "Tenant requested the return of the deposit.",
+      actionInput.txHash,
+    );
+    recordWalletInteraction(db, actionInput.actorWallet, "request_refund", true, targetCase.contractAddress, caseId, actionInput.txHash);
     recordEvent(db, "refund_requested", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`);
-    return { case: targetCase };
+    return { case: targetCase, txHash: actionInput.txHash };
   }
 
   if (actionInput.type === "APPROVE_FULL_REFUND") {
     assertRole(actionInput.actorRole, "LANDLORD");
     assertStatus(targetCase.status, "REFUND_REQUESTED");
-    const txHash = createMockHash("refund");
-    targetCase.status = "CLOSED";
-    targetCase.releaseTxHash = txHash;
+    assertResultingStatus(actionInput.resultingStatus, "REFUNDED");
+    targetCase.status = actionInput.resultingStatus;
+    targetCase.releaseTxHash = actionInput.txHash;
     targetCase.updatedAt = timestamp;
-    recordAudit(db, caseId, actionInput.actorRole, actionInput.actorWallet, "APPROVE_FULL_REFUND", "Landlord approved the full refund release.", txHash);
-    recordWalletInteraction(db, actionInput.actorWallet, "approve_full_refund", true, caseId, txHash);
-    recordEvent(db, "refund_requested", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`, {
+    recordAudit(
+      db,
+      caseId,
+      actionInput.actorRole,
+      actionInput.actorWallet,
+      "APPROVE_FULL_REFUND",
+      "Landlord approved the full refund release.",
+      actionInput.txHash,
+    );
+    recordWalletInteraction(
+      db,
+      actionInput.actorWallet,
+      "approve_full_refund",
+      true,
+      targetCase.contractAddress,
+      caseId,
+      actionInput.txHash,
+    );
+    recordEvent(db, "refund_approved", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`, {
       resolution: "full_refund",
     });
-    return { case: targetCase, txHash };
+    return { case: targetCase, txHash: actionInput.txHash };
   }
 
   if (actionInput.type === "PROPOSE_DEDUCTION") {
@@ -344,39 +423,58 @@ export function performCaseAction(db: AppDatabase, caseId: string, actionInput: 
       createdAt: timestamp,
     };
 
+    assertResultingStatus(actionInput.resultingStatus, "DEDUCTION_PROPOSED");
     db.deductionProposals = db.deductionProposals.filter((entry) => entry.caseId !== caseId);
     db.deductionProposals.unshift(proposal);
-    targetCase.status = "DEDUCTION_PROPOSED";
+    targetCase.status = actionInput.resultingStatus;
     targetCase.updatedAt = timestamp;
-    recordAudit(db, caseId, actionInput.actorRole, actionInput.actorWallet, "PROPOSE_DEDUCTION", "Landlord proposed a partial deduction.", undefined, {
-      amount: actionInput.amount,
-    });
+    recordAudit(
+      db,
+      caseId,
+      actionInput.actorRole,
+      actionInput.actorWallet,
+      "PROPOSE_DEDUCTION",
+      "Landlord proposed a partial deduction.",
+      actionInput.txHash,
+      {
+        amount: actionInput.amount,
+      },
+    );
+    recordWalletInteraction(db, actionInput.actorWallet, "propose_deduction", true, targetCase.contractAddress, caseId, actionInput.txHash);
     recordEvent(db, "deduction_proposed", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`, {
       amount: actionInput.amount,
     });
-    return { case: targetCase };
+    return { case: targetCase, txHash: actionInput.txHash };
   }
 
   if (actionInput.type === "ACCEPT_DEDUCTION") {
     assertRole(actionInput.actorRole, "TENANT");
     assertStatus(targetCase.status, "DEDUCTION_PROPOSED");
-    const txHash = createMockHash("split");
     const proposal = db.deductionProposals.find((entry) => entry.caseId === caseId);
 
     if (!proposal) {
       throw new Error("No deduction proposal exists for this case.");
     }
 
+    assertResultingStatus(actionInput.resultingStatus, ["PARTIALLY_REFUNDED", "RELEASED_TO_LANDLORD"]);
     proposal.status = "ACCEPTED";
-    targetCase.status = "CLOSED";
-    targetCase.releaseTxHash = txHash;
+    targetCase.status = actionInput.resultingStatus;
+    targetCase.releaseTxHash = actionInput.txHash;
     targetCase.updatedAt = timestamp;
-    recordAudit(db, caseId, actionInput.actorRole, actionInput.actorWallet, "ACCEPT_DEDUCTION", "Tenant accepted the deduction split and funds were released.", txHash);
-    recordWalletInteraction(db, actionInput.actorWallet, "accept_deduction", true, caseId, txHash);
+    recordAudit(
+      db,
+      caseId,
+      actionInput.actorRole,
+      actionInput.actorWallet,
+      "ACCEPT_DEDUCTION",
+      "Tenant accepted the deduction split and funds were released.",
+      actionInput.txHash,
+    );
+    recordWalletInteraction(db, actionInput.actorWallet, "accept_deduction", true, targetCase.contractAddress, caseId, actionInput.txHash);
     recordEvent(db, "deduction_accepted", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`, {
       deductionAmount: proposal.amount,
     });
-    return { case: targetCase, txHash };
+    return { case: targetCase, txHash: actionInput.txHash };
   }
 
   if (actionInput.type === "OPEN_DISPUTE") {
@@ -391,45 +489,85 @@ export function performCaseAction(db: AppDatabase, caseId: string, actionInput: 
       createdAt: timestamp,
     };
 
+    assertResultingStatus(actionInput.resultingStatus, "DISPUTED");
     db.disputes = db.disputes.filter((entry) => entry.caseId !== caseId);
     db.disputes.unshift(dispute);
-    targetCase.status = "DISPUTED";
+    targetCase.status = actionInput.resultingStatus;
     targetCase.updatedAt = timestamp;
-    recordAudit(db, caseId, actionInput.actorRole, actionInput.actorWallet, "OPEN_DISPUTE", "A dispute was opened and moved to mediation.");
+    recordAudit(
+      db,
+      caseId,
+      actionInput.actorRole,
+      actionInput.actorWallet,
+      "OPEN_DISPUTE",
+      "A dispute was opened and moved to mediation.",
+      actionInput.txHash,
+    );
+    recordWalletInteraction(db, actionInput.actorWallet, "open_dispute", true, targetCase.contractAddress, caseId, actionInput.txHash);
     recordEvent(db, "dispute_opened", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`);
-    return { case: targetCase };
+    return { case: targetCase, txHash: actionInput.txHash };
   }
 
-  assertRole(actionInput.actorRole, "MEDIATOR");
-  assertStatus(targetCase.status, "DISPUTED");
+  if (actionInput.type === "RESOLVE_DISPUTE") {
+    assertRole(actionInput.actorRole, "MEDIATOR");
+    assertStatus(targetCase.status, "DISPUTED");
 
-  if (actionInput.tenantAmount + actionInput.landlordAmount > targetCase.depositAmount) {
-    throw new Error("Resolution split cannot exceed the deposit amount.");
+    if (actionInput.tenantAmount + actionInput.landlordAmount > targetCase.depositAmount) {
+      throw new Error("Resolution split cannot exceed the deposit amount.");
+    }
+
+    const dispute = db.disputes.find((entry) => entry.caseId === caseId);
+
+    if (!dispute) {
+      throw new Error("No open dispute exists for this case.");
+    }
+
+    assertResultingStatus(actionInput.resultingStatus, "CLOSED");
+    dispute.status = "RESOLVED";
+    dispute.tenantAmount = actionInput.tenantAmount;
+    dispute.landlordAmount = actionInput.landlordAmount;
+    dispute.resolutionNote = actionInput.resolutionNote;
+    dispute.resolvedAt = timestamp;
+    targetCase.status = actionInput.resultingStatus;
+    targetCase.releaseTxHash = actionInput.txHash;
+    targetCase.updatedAt = timestamp;
+    recordAudit(
+      db,
+      caseId,
+      actionInput.actorRole,
+      actionInput.actorWallet,
+      "RESOLVE_DISPUTE",
+      "Mediator resolved the dispute and released funds.",
+      actionInput.txHash,
+      {
+        tenantAmount: actionInput.tenantAmount,
+        landlordAmount: actionInput.landlordAmount,
+      },
+    );
+    recordWalletInteraction(db, actionInput.actorWallet, "resolve_dispute", true, targetCase.contractAddress, caseId, actionInput.txHash);
+    recordEvent(db, "dispute_resolved", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`, {
+      tenantAmount: actionInput.tenantAmount,
+      landlordAmount: actionInput.landlordAmount,
+    });
+    return { case: targetCase, txHash: actionInput.txHash };
   }
 
-  const dispute = db.disputes.find((entry) => entry.caseId === caseId);
+  assertRole(actionInput.actorRole, ["LANDLORD", "MEDIATOR"]);
+  assertStatus(targetCase.status, ["REFUNDED", "PARTIALLY_REFUNDED", "RELEASED_TO_LANDLORD"]);
+  assertResultingStatus(actionInput.resultingStatus, "CLOSED");
 
-  if (!dispute) {
-    throw new Error("No open dispute exists for this case.");
-  }
-
-  const txHash = createMockHash("resolve");
-  dispute.status = "RESOLVED";
-  dispute.tenantAmount = actionInput.tenantAmount;
-  dispute.landlordAmount = actionInput.landlordAmount;
-  dispute.resolutionNote = actionInput.resolutionNote;
-  dispute.resolvedAt = timestamp;
-  targetCase.status = "CLOSED";
-  targetCase.releaseTxHash = txHash;
+  targetCase.status = actionInput.resultingStatus;
   targetCase.updatedAt = timestamp;
-  recordAudit(db, caseId, actionInput.actorRole, actionInput.actorWallet, "RESOLVE_DISPUTE", "Mediator resolved the dispute and released funds.", txHash, {
-    tenantAmount: actionInput.tenantAmount,
-    landlordAmount: actionInput.landlordAmount,
-  });
-  recordWalletInteraction(db, actionInput.actorWallet, "resolve_dispute", true, caseId, txHash);
-  recordEvent(db, "dispute_resolved", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`, {
-    tenantAmount: actionInput.tenantAmount,
-    landlordAmount: actionInput.landlordAmount,
-  });
-  return { case: targetCase, txHash };
+  recordAudit(
+    db,
+    caseId,
+    actionInput.actorRole,
+    actionInput.actorWallet,
+    "CLOSE_CASE",
+    "Final settlement confirmed and the case was closed.",
+    actionInput.txHash,
+  );
+  recordWalletInteraction(db, actionInput.actorWallet, "close_case", true, targetCase.contractAddress, caseId, actionInput.txHash);
+  recordEvent(db, "case_closed", actionInput.actorRole, actionInput.actorWallet, `/cases/${caseId}`);
+  return { case: targetCase, txHash: actionInput.txHash };
 }

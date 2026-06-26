@@ -28,7 +28,7 @@ export function DisputeResolutionPanel({
 
     startTransition(async () => {
       const result = await resolveDisputeOnChain(
-        caseRecord.id,
+        caseRecord,
         session.walletAddress,
         Number(tenantAmount),
         Number(landlordAmount),

@@ -15,7 +15,7 @@ const defaultForm = {
   propertyAddress: "",
   tenantName: "",
   tenantWalletAddress: "",
-  landlordName: "Demo landlord",
+  landlordName: "Landlord",
   landlordWalletAddress: "",
   mediatorWalletAddress: "",
   depositAmount: 1800,
@@ -52,7 +52,7 @@ export function CreateCaseForm() {
         return;
       }
 
-      toast.success("Deposit case created.");
+      toast.success("Deposit case deployed on Stellar testnet.");
       router.push("/cases");
       router.refresh();
     });

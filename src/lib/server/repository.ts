@@ -1,7 +1,6 @@
 import { buildBootstrapPayload } from "@/lib/server/bootstrap";
 import { readDb, updateDb } from "@/lib/server/db";
 import { createSeedData } from "@/lib/server/seed";
-import { DEMO_CONTRACT_ADDRESS } from "@/lib/constants";
 import { performCaseAction, buildCaseRecord } from "@/lib/domain/case-machine";
 import type { AppDatabase, ErrorLog, Feedback, RentalDepositCase, User } from "@/lib/types";
 
@@ -51,19 +50,24 @@ export async function resetDatabase() {
   });
 }
 
-export async function createCase(input: Omit<RentalDepositCase, "id" | "status" | "contractAddress" | "createdAt" | "updatedAt">) {
+type CreateCaseInput = Omit<RentalDepositCase, "id" | "status" | "createdAt" | "updatedAt"> & {
+  creationTxHash?: string;
+};
+
+export async function createCase(input: CreateCaseInput) {
   return updateDb((db) => {
     const timestamp = now();
+    const { creationTxHash, ...caseInput } = input;
     const createdCase: RentalDepositCase = {
       id: `case_${crypto.randomUUID().replaceAll("-", "").slice(0, 12)}`,
       status: "CREATED",
-      contractAddress: DEMO_CONTRACT_ADDRESS,
       createdAt: timestamp,
       updatedAt: timestamp,
-      ...input,
+      ...caseInput,
     };
 
     db.cases.unshift(createdCase);
+    db.submissionMeta.contractDeploymentAddress = createdCase.contractAddress;
     db.auditLogs.unshift({
       id: `audit_${crypto.randomUUID()}`,
       caseId: createdCase.id,
@@ -71,6 +75,17 @@ export async function createCase(input: Omit<RentalDepositCase, "id" | "status" 
       actorWallet: createdCase.landlordWalletAddress,
       action: "CREATE_CASE",
       message: `Landlord created the ${createdCase.propertyName} escrow case.`,
+      txHash: creationTxHash,
+      createdAt: timestamp,
+    });
+    db.walletInteractions.unshift({
+      id: `wallet_${crypto.randomUUID()}`,
+      walletAddress: createdCase.landlordWalletAddress,
+      action: "case_created",
+      txHash: creationTxHash,
+      contractAddress: createdCase.contractAddress,
+      caseId: createdCase.id,
+      success: true,
       createdAt: timestamp,
     });
     db.analyticsEvents.unshift({
@@ -85,7 +100,7 @@ export async function createCase(input: Omit<RentalDepositCase, "id" | "status" 
   });
 }
 
-export async function connectWallet(role: User["role"], walletAddress: string, name = `${role} demo user`, email = `${role.toLowerCase()}@example.com`) {
+export async function connectWallet(role: User["role"], walletAddress: string, name = "", email = "") {
   return updateDb((db) => {
     const timestamp = now();
     const user = upsertUser(db, {
@@ -101,7 +116,6 @@ export async function connectWallet(role: User["role"], walletAddress: string, n
       walletAddress,
       action: "wallet_connected",
       success: true,
-      contractAddress: DEMO_CONTRACT_ADDRESS,
       createdAt: timestamp,
     });
 

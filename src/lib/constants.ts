@@ -1,9 +1,9 @@
 import type { DepositCaseStatus, UserRole } from "@/lib/types";
+import { STELLAR_NETWORK_LABEL } from "@/lib/stellar/network";
 
 export const APP_NAME = "RentDeposit Shield";
 export const LOCAL_STORAGE_SESSION_KEY = "rentdeposit-shield-session";
-export const NETWORK_LABEL = "Stellar Testnet";
-export const DEMO_CONTRACT_ADDRESS = "CD7MRENTDEPOSITESCROWTESTNETPLACEHOLDER000000000000";
+export const NETWORK_LABEL = STELLAR_NETWORK_LABEL;
 export const STELLAR_EXPLORER_BASE = "https://stellar.expert/explorer/testnet";
 
 export const ROLE_LABELS: Record<UserRole, string> = {
@@ -47,11 +47,14 @@ export const EVENT_NAMES = [
   "case_created",
   "deposit_funded",
   "move_in_evidence_uploaded",
+  "move_in_confirmed",
   "refund_requested",
+  "refund_approved",
   "deduction_proposed",
   "deduction_accepted",
   "dispute_opened",
   "dispute_resolved",
+  "case_closed",
   "feedback_submitted",
   "submission_page_viewed",
 ] as const;
