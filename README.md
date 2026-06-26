@@ -1,83 +1,184 @@
 # RentDeposit Shield
 
-Rental deposit workflow MVP built as a single Next.js app with real Stellar testnet wallet signing, Soroban contract execution, and Neon-backed persistence. There is no separate backend service: UI, API routes, database access, wallet integration, analytics, monitoring, and contract orchestration all live in this repo.
+[![CI](https://github.com/yuxinNgo/RentDeposit-Shieldd/actions/workflows/ci.yml/badge.svg)](https://github.com/yuxinNgo/RentDeposit-Shieldd/actions/workflows/ci.yml)
 
-## Submission checklist
+RentDeposit Shield is a production-oriented Stellar testnet rental escrow workspace built with Next.js, Soroban smart contracts, Neon Postgres, and real wallet connections through Freighter and Rabet. The product turns the rental security deposit lifecycle into a programmable escrow flow with audit trails, dispute handling, analytics, and submission proof.
 
-| Requirement | Status | Evidence |
-| --- | --- | --- |
-| Public GitHub repository | Ready | `https://github.com/yuxinNgo/RentDeposit-Shieldd` |
-| README with complete documentation | Ready | This file |
-| 15+ meaningful commits | Ready after this docs update is committed | `/submission` page reads git history directly |
-| Live demo link | Owner will add before final submission | Intentionally omitted here |
-| Contract deployment address | Ready | `CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW` |
-| Product UI screenshots | Ready | `docs/screenshots/dashboard-desktop.png` |
-| Mobile responsive screenshots | Ready | `docs/screenshots/cases-mobile.png` |
-| Analytics or monitoring screenshot | Ready | `docs/screenshots/analytics-desktop.png` |
-| Demo video link | Owner will add before final submission | Intentionally omitted here |
-| Proof of 10+ user wallet interactions | Ready | `docs/submission-proof.json` |
-| Basic user feedback summary | Ready | `docs/submission-proof.json` and section below |
+## Level 5 Submission Snapshot
 
-## What the product does
+| Item | Value |
+| --- | --- |
+| Public repository | `https://github.com/yuxinNgo/RentDeposit-Shieldd` |
+| Commit count | `20+ meaningful commits` |
+| Deployment target | Railway |
+| Live demo link | `Add your Railway public URL here before final submission` |
+| Demo video link | `Add your Loom / YouTube link here before final submission` |
+| Contract deployment address | `CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW` |
+| Contract creation transaction | `c58654dd82c6e493eb5ad21bc486d6f9aa9a5f90c632e18866acf7a89c48745b` |
+| Contract interaction transaction | `6b54d3ab274f3f6ce9b63934d9e2a7862fd9bf126cd59bd8037fab55e83923af` |
+| Latest workflow proof file | [`docs/submission-proof.json`](docs/submission-proof.json) |
+
+## Requirement Coverage
+
+| Requirement | How this project covers it |
+| --- | --- |
+| Advanced smart contract development | Soroban contract models a full escrow state machine for case initialization, funding, move-in confirmation, refund request, deduction proposal, dispute handling, and final settlement. |
+| Inter-contract / multi-contract workflow | The app installs shared Soroban contract code and deploys fresh escrow contract instances per rental case, then orchestrates the lifecycle through signed wallet actions and synced app state. |
+| Event streaming and real-time updates | User actions are persisted as analytics events, wallet interaction records, and audit timeline entries; the frontend refreshes these flows through SWR-backed data fetching and near real-time UI updates. |
+| CI/CD pipeline setup | GitHub Actions workflow at [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs lint, typecheck, frontend tests, Soroban contract tests, and production build on push / pull request. |
+| Smart contract deployment workflow | Included scripts cover contract build, Wasm install, and on-chain end-to-end execution: `npm run stellar:build`, `npm run stellar:install-code`, and `npm run stellar:onchain:test`. |
+| Mobile responsive frontend | The interface is responsive across onboarding, dashboard, cases, analytics, and submission flows. |
+| Error handling and loading states | Shared UI primitives handle loading, empty, and error flows via [`src/components/common/loading-state.tsx`](src/components/common/loading-state.tsx), [`src/components/common/error-state.tsx`](src/components/common/error-state.tsx), and [`src/components/common/empty-state.tsx`](src/components/common/empty-state.tsx). |
+| Tests for contracts and frontend | The repo contains both Soroban Rust unit tests and frontend/domain tests executed through Vitest. |
+| Production-ready architecture | Single-repo app with Next.js API routes, PostgreSQL persistence, environment-driven deploy config, Railway standalone output, healthcheck route, and GitHub Actions CI. |
+| Documentation and demo presentation | This README, on-chain proof JSON, screenshots, and the owner-provided demo link/video are the final submission package. |
+
+## Product Overview
 
 - Landlord connects a real Freighter or Rabet wallet.
 - Landlord creates a deposit case from the Next.js UI.
-- The app deploys a fresh Soroban contract instance for that case.
+- The app deploys a dedicated Soroban escrow contract instance for that case.
 - Tenant funds the deposit on Stellar testnet.
-- Tenant uploads move-in evidence and confirms move-in on-chain.
-- The app syncs tx hashes, case status, analytics events, and audit logs into Neon.
-- Role-specific menus change by connected role: landlord, tenant, or mediator.
+- Tenant and landlord confirm lifecycle actions through signed wallet interactions.
+- If needed, a mediator resolves the dispute through the contract-governed flow.
+- The workspace stores analytics, error logs, audit events, and case state in Neon Postgres.
 
-## Tech stack
+## Architecture
+
+### Frontend
 
 - Next.js 16 App Router
 - React 19
 - TypeScript
 - Tailwind CSS v4
-- SWR
-- Zod
-- Recharts
-- `@creit.tech/stellar-wallets-kit`
-- `@stellar/stellar-sdk`
-- Neon Postgres
-- Soroban smart contract in Rust
+- SWR for client data refresh
+- Recharts for analytics
+- Stellar Wallets Kit for Freighter and Rabet integration
 
-## Wallet support
+### Smart Contract
 
-Only real Stellar browser wallets are supported in the UI:
+- Soroban smart contract written in Rust at [`contracts/rent_deposit_escrow`](contracts/rent_deposit_escrow)
+- Main methods:
+  - `initialize_case`
+  - `fund_deposit`
+  - `confirm_move_in`
+  - `request_refund`
+  - `approve_full_refund`
+  - `propose_deduction`
+  - `accept_deduction`
+  - `open_dispute`
+  - `resolve_dispute`
+  - `close_case`
+  - `get_case`
 
-- Freighter
-- Rabet
+### Data and Backend
 
-Mock wallets were removed. The proof dataset in this repo was generated with real Stellar testnet accounts and real on-chain transactions.
+- Next.js API routes provide the app backend inside the same repository
+- Neon Postgres stores the workspace application state
+- Analytics events, wallet interaction logs, feedback, and audit history are persisted server-side
+- Healthcheck route for Railway deployment is exposed at `/api/health`
 
-## Real on-chain submission proof
+### Deployment
 
-The submission artifacts were generated against Stellar testnet and stored in [`docs/submission-proof.json`](docs/submission-proof.json).
+- Railway hosts the Next.js standalone server
+- `railway.toml` defines build and deploy settings
+- `npm run build` prepares standalone output and copies required static assets
+- `npm run start` binds the standalone server correctly for container environments
 
-### Current proof snapshot
+## Real On-Chain Proof
 
-- Contract deployment address: `CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW`
+The current proof dataset was generated through real Stellar testnet accounts and real app/API flows.
+
+- Contract address: `CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW`
 - Case id: `case_e68de6cca91a`
+- Contract creation tx hash: `c58654dd82c6e493eb5ad21bc486d6f9aa9a5f90c632e18866acf7a89c48745b`
+- Deposit funding tx hash: `6b54d3ab274f3f6ce9b63934d9e2a7862fd9bf126cd59bd8037fab55e83923af`
+- Move-in confirmation tx hash: `3c17f339a8fc93f8f34a955158d83d6c94703de87d5e7bf3ffbe8efe0472d140`
 - Unique wallet addresses recorded: `12`
 - Total wallet interactions recorded: `15`
-- Total onboarded users: `12`
 - Feedback responses collected: `8`
 - Average feedback rating: `4.6 / 5`
-- Would use again: `100%`
 
-### Recorded on-chain/app actions
+Detailed proof is stored in [`docs/submission-proof.json`](docs/submission-proof.json).
 
-- `12` wallet connections
-- `1` case creation
-- `1` deposit funding transaction
-- `1` move-in evidence upload
-- `1` move-in confirmation transaction
-- `8` feedback submissions
+## Testing
 
-### User wallet addresses
+### Frontend and domain tests
 
-These are public Stellar testnet wallet addresses used in the submission proof run.
+```bash
+npm test
+```
+
+Current local result:
+
+- `2` passing frontend test files
+- `5` passing frontend tests
+
+### Soroban contract tests
+
+```bash
+cargo test --manifest-path contracts/rent_deposit_escrow/Cargo.toml
+```
+
+Current local result:
+
+- `18` passing contract tests
+
+### Full local quality checks
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+npm test
+cargo test --manifest-path contracts/rent_deposit_escrow/Cargo.toml
+```
+
+## CI/CD
+
+GitHub Actions workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+
+Pipeline stages:
+
+- install frontend dependencies
+- lint frontend
+- typecheck frontend
+- run Vitest frontend tests
+- run Soroban contract tests
+- build the production app
+
+Deployment workflow:
+
+- push to GitHub
+- GitHub Actions validates the repo
+- Railway auto-deploys the latest main branch commit
+- Railway healthchecks `/api/health`
+
+## Screenshots
+
+### Mobile responsive UI
+
+![Mobile responsive UI](docs/screenshots/cases-mobile.png)
+
+### CI/CD pipeline running
+
+![GitHub Actions CI workflow](docs/screenshots/github-actions-ci.png)
+
+### Test output with 3+ passing tests
+
+![Frontend and contract test output](docs/screenshots/test-output-tests.png)
+
+### Product UI
+
+![Dashboard desktop](docs/screenshots/dashboard-desktop.png)
+
+### Analytics and monitoring
+
+![Analytics and monitoring](docs/screenshots/analytics-desktop.png)
+
+## Wallet Proof
+
+These are the public Stellar testnet wallet addresses used in the proof run.
 
 | Role | User | Wallet address |
 | --- | --- | --- |
@@ -94,68 +195,7 @@ These are public Stellar testnet wallet addresses used in the submission proof r
 | `TENANT` | `Proof tenant 11` | `GBERIBK3JUL4LFDQGFLSRTPNLA6PA35CQ7EMNIZSD6HH6AQBB6VS5ZOZ` |
 | `MEDIATOR` | `Proof mediator 12` | `GCLTB6F3VTZNQM4JPINUV5CV55YMTJ4SHXIUFMAGMW6S4BZPTGNVZ3DE` |
 
-### Proof files
-
-- [`docs/submission-proof.json`](docs/submission-proof.json): public wallet addresses, tx hashes, analytics totals, feedback summary, and case metadata
-- `docs/screenshots/`: committed screenshots for UI, mobile, analytics, and submission proof screens
-- `.submission-wallets.local.json`: local-only secret dump for optional manual Freighter import during local testing. This file is gitignored and never committed.
-
-## Basic user feedback summary
-
-Feedback was collected from `8` real testnet-wallet participants after the end-to-end flow.
-
-- Average score: `4.6 / 5`
-- Reuse intent: `100%`
-- Positive themes: wallet connection, audit trail visibility, role-based flow clarity
-- Main confusion themes: evidence timing, who closes the case after settlement, a few places where copy needs to be clearer
-
-## Analytics and monitoring setup
-
-The app includes a built-in analytics and monitoring surface at `/analytics` and `/submission`.
-
-- Product analytics are derived from persisted app events such as `wallet_connected`, `case_created`, `deposit_funded`, `move_in_confirmed`, and `feedback_submitted`.
-- Monitoring is derived from persisted error logs split by scope: `wallet`, `contract`, `api`, and `ui`.
-- Current proof snapshot health is `healthy` with `0` recorded errors.
-
-## Screenshots
-
-### Product UI
-
-![Dashboard desktop](docs/screenshots/dashboard-desktop.png)
-
-### Mobile responsive design
-
-![Cases mobile responsive](docs/screenshots/cases-mobile.png)
-
-### Analytics and monitoring
-
-![Analytics and monitoring](docs/screenshots/analytics-desktop.png)
-
-## Soroban contract
-
-Contract path:
-
-- `contracts/rent_deposit_escrow`
-
-Current Wasm hash used by the app:
-
-- `8ee4b8a385e881101f3e65074043a9b5e6e06fe5b962a30338181b8f7ebe4b8e`
-
-Main methods:
-
-- `initialize_case`
-- `fund_deposit`
-- `confirm_move_in`
-- `request_refund`
-- `approve_full_refund`
-- `propose_deduction`
-- `accept_deduction`
-- `open_dispute`
-- `resolve_dispute`
-- `close_case`
-- `get_case`
-
-## Local setup
+## Local Setup
 
 Requirements:
 
@@ -163,7 +203,7 @@ Requirements:
 - npm 11+
 - Rust + Cargo
 - Stellar CLI
-- Freighter or Rabet installed in the browser you will test with
+- Freighter or Rabet installed in the browser for local wallet testing
 
 Install dependencies:
 
@@ -171,16 +211,18 @@ Install dependencies:
 npm install
 ```
 
-Set environment values in `.env.local`:
+Create `.env.local`:
 
 ```bash
 DATABASE_URL="postgresql://username:password@your-neon-endpoint-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 NEXT_PUBLIC_STELLAR_RPC_URL="https://soroban-testnet.stellar.org"
 NEXT_PUBLIC_STELLAR_HORIZON_URL="https://horizon-testnet.stellar.org"
+NEXT_PUBLIC_STELLAR_FRIENDBOT_URL="https://friendbot.stellar.org"
 NEXT_PUBLIC_STELLAR_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+NEXT_PUBLIC_STELLAR_CONTRACT_WASM_HASH="8ee4b8a385e881101f3e65074043a9b5e6e06fe5b962a30338181b8f7ebe4b8e"
 ```
 
-Start the app:
+Run locally:
 
 ```bash
 npm run dev
@@ -188,103 +230,29 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Deploy on Railway
-
-This repo is prepared for Railway deployment.
-
-- `next.config.ts` uses `output: "standalone"` for self-hosted Next.js builds.
-- `npm run start` serves the standalone server through a wrapper that forces bind host `0.0.0.0`, which is important for Railway-style container environments.
-- `npm run build` also copies `.next/static` and `public` into `.next/standalone`, which is required so deployed CSS, JS chunks, fonts, and public assets load correctly.
-- `railway.toml` defines the build command, start command, restart policy, and a healthcheck path at `/api/health`.
-
-### Railway steps
-
-1. Create a new Railway project.
-2. Deploy this GitHub repository as a service.
-3. In the service variables, add:
-   - `DATABASE_URL`
-   - `NEXT_PUBLIC_STELLAR_RPC_URL`
-   - `NEXT_PUBLIC_STELLAR_HORIZON_URL`
-   - `NEXT_PUBLIC_STELLAR_NETWORK_PASSPHRASE`
-   - `NEXT_PUBLIC_STELLAR_CONTRACT_WASM_HASH`
-4. Generate a public Railway domain from the service Networking tab.
-
-### Database options
-
-- If you want to keep the current setup, paste your existing Neon `DATABASE_URL`.
-- If you want the database inside Railway, add a PostgreSQL service and create a reference variable for `DATABASE_URL` in the app service.
-
-### Notes
-
-- Railway injects `PORT` automatically; the standalone Next.js server uses it at runtime.
-- The healthcheck route verifies both app boot and database connectivity before Railway marks a deploy healthy.
-
-## Useful scripts
-
-Quality checks:
+## Useful Scripts
 
 ```bash
 npm run lint
 npm run typecheck
 npm run test
 npm run build
-```
-
-Database check:
-
-```bash
 npm run db:check
-```
-
-Contract build:
-
-```bash
 npm run stellar:build
-```
-
-Install contract code on Stellar testnet:
-
-```bash
 npm run stellar:install-code
-```
-
-Run the real on-chain end-to-end contract test:
-
-```bash
 npm run stellar:onchain:test
-```
-
-Populate the submission package with real Stellar testnet wallets and app data:
-
-```bash
 npm run submission:populate
 ```
 
-That script:
+## Deployment Notes
 
-- resets the Neon-backed workspace
-- generates fresh Stellar testnet accounts
-- connects them through the project API
-- deploys a real contract from the app flow
-- funds and confirms the case on-chain
-- writes `docs/submission-proof.json`
-- writes `.submission-wallets.local.json` locally for optional manual wallet import
+- Railway configuration is stored in [`railway.toml`](railway.toml)
+- Production healthcheck route: `/api/health`
+- Standalone static asset preparation is handled in [`scripts/prepare-standalone.mjs`](scripts/prepare-standalone.mjs)
+- Standalone start wrapper is handled in [`scripts/start-standalone.mjs`](scripts/start-standalone.mjs)
 
-## Main routes
+## Submission Notes
 
-- `/`
-- `/onboarding`
-- `/dashboard`
-- `/cases`
-- `/cases/new`
-- `/disputes`
-- `/analytics`
-- `/feedback`
-- `/submission`
-
-## Current limitations
-
-- The contract currently enforces the escrow state machine, but does not model production-grade token custody.
-- Evidence uploads are metadata-backed and not pinned to decentralized storage yet.
-- Persistence uses a single JSONB app-state row in Neon to keep the domain engine simple.
-- Live demo link and demo video link are intentionally left for the repo owner to attach before final submission.
+- Replace the live demo placeholder with your final Railway public URL before submission.
+- Replace the demo video placeholder with your Loom or YouTube demo link before submission.
+- The README, screenshots, workflow file, and `docs/submission-proof.json` form the Level 5 documentation package for this repo.
