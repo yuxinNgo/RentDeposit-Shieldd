@@ -1,3 +1,6 @@
 [workspace]
 members = ["rent_deposit_escrow"]
 resolver = "2"
+
+[profile.release]
+overflow-checks = true

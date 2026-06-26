@@ -1,6 +1,6 @@
 #![no_std]
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, BytesN, Env};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, BytesN, Env, Symbol};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[contracttype]
@@ -24,7 +24,7 @@ pub struct DepositCase {
     pub tenant: Address,
     pub landlord: Address,
     pub mediator: Address,
-    pub asset: Address,
+    pub asset_code: Symbol,
     pub amount: i128,
     pub status: DepositCaseStatus,
     pub funded_amount: i128,
@@ -89,7 +89,7 @@ impl RentDepositEscrow {
         tenant: Address,
         landlord: Address,
         mediator: Address,
-        asset: Address,
+        asset_code: Symbol,
         amount: i128,
     ) {
         if env.storage().instance().has(&DataKey::Case) {
@@ -105,7 +105,7 @@ impl RentDepositEscrow {
             tenant,
             landlord,
             mediator,
-            asset,
+            asset_code,
             amount,
             status: DepositCaseStatus::Created,
             funded_amount: 0,
@@ -288,39 +288,39 @@ mod tests {
     extern crate std;
 
     use super::{DepositCaseStatus, RentDepositEscrow, RentDepositEscrowClient};
-    use soroban_sdk::{testutils::Address as _, Address, BytesN, Env};
+    use soroban_sdk::{testutils::Address as _, symbol_short, Address, BytesN, Env, Symbol};
 
     fn hash(env: &Env, seed: u8) -> BytesN<32> {
         BytesN::from_array(env, &[seed; 32])
     }
 
-    fn setup() -> (Env, RentDepositEscrowClient<'static>, Address, Address, Address, Address) {
+    fn setup() -> (Env, RentDepositEscrowClient<'static>, Address, Address, Address, Symbol) {
         let env = Env::default();
         let tenant = Address::generate(&env);
         let landlord = Address::generate(&env);
         let mediator = Address::generate(&env);
-        let asset = Address::generate(&env);
+        let asset_code = symbol_short!("USDC");
         let contract_id = env.register(RentDepositEscrow, ());
         let client = RentDepositEscrowClient::new(&env, &contract_id);
         env.mock_all_auths();
-        client.initialize_case(&tenant, &landlord, &mediator, &asset, &1_500);
-        (env, client, tenant, landlord, mediator, asset)
+        client.initialize_case(&tenant, &landlord, &mediator, &asset_code, &1_500);
+        (env, client, tenant, landlord, mediator, asset_code)
     }
 
     #[test]
     fn initialize_success() {
-        let (_env, client, tenant, landlord, mediator, asset) = setup();
+        let (_env, client, tenant, landlord, mediator, asset_code) = setup();
         let case_data = client.get_case();
         assert_eq!(case_data.tenant, tenant);
         assert_eq!(case_data.landlord, landlord);
         assert_eq!(case_data.mediator, mediator);
-        assert_eq!(case_data.asset, asset);
+        assert_eq!(case_data.asset_code, asset_code);
         assert_eq!(case_data.status, DepositCaseStatus::Created);
     }
 
     #[test]
     fn tenant_fund_success() {
-        let (_env, client, tenant, _landlord, _mediator, _asset) = setup();
+        let (_env, client, tenant, _landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         assert_eq!(client.get_case().status, DepositCaseStatus::Funded);
     }
@@ -328,20 +328,20 @@ mod tests {
     #[test]
     #[should_panic(expected = "only tenant can perform this action")]
     fn non_tenant_fund_fail() {
-        let (_env, client, _tenant, landlord, _mediator, _asset) = setup();
+        let (_env, client, _tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&landlord, &1_500);
     }
 
     #[test]
     #[should_panic(expected = "fund amount must match the deposit amount")]
     fn fund_wrong_amount_fail() {
-        let (_env, client, tenant, _landlord, _mediator, _asset) = setup();
+        let (_env, client, tenant, _landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_200);
     }
 
     #[test]
     fn request_refund_success() {
-        let (_env, client, tenant, _landlord, _mediator, _asset) = setup();
+        let (_env, client, tenant, _landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -351,7 +351,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "only tenant can perform this action")]
     fn non_tenant_request_refund_fail() {
-        let (_env, client, tenant, landlord, _mediator, _asset) = setup();
+        let (_env, client, tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&landlord);
@@ -359,7 +359,7 @@ mod tests {
 
     #[test]
     fn landlord_approve_refund_success() {
-        let (_env, client, tenant, landlord, _mediator, _asset) = setup();
+        let (_env, client, tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -370,7 +370,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "only landlord can perform this action")]
     fn non_landlord_approve_refund_fail() {
-        let (_env, client, tenant, _landlord, _mediator, _asset) = setup();
+        let (_env, client, tenant, _landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -379,7 +379,7 @@ mod tests {
 
     #[test]
     fn propose_deduction_success() {
-        let (env, client, tenant, landlord, _mediator, _asset) = setup();
+        let (env, client, tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -390,7 +390,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "deduction cannot exceed deposit")]
     fn deduction_greater_than_deposit_fail() {
-        let (env, client, tenant, landlord, _mediator, _asset) = setup();
+        let (env, client, tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -399,7 +399,7 @@ mod tests {
 
     #[test]
     fn tenant_accept_deduction_success() {
-        let (env, client, tenant, landlord, _mediator, _asset) = setup();
+        let (env, client, tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -410,7 +410,7 @@ mod tests {
 
     #[test]
     fn open_dispute_success() {
-        let (env, client, tenant, landlord, _mediator, _asset) = setup();
+        let (env, client, tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -422,7 +422,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "only mediator can perform this action")]
     fn non_mediator_resolve_dispute_fail() {
-        let (env, client, tenant, landlord, _mediator, _asset) = setup();
+        let (env, client, tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -433,7 +433,7 @@ mod tests {
 
     #[test]
     fn mediator_resolve_split_success() {
-        let (env, client, tenant, landlord, mediator, _asset) = setup();
+        let (env, client, tenant, landlord, mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -446,7 +446,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "resolution split cannot exceed deposit")]
     fn split_amount_greater_than_deposit_fail() {
-        let (env, client, tenant, landlord, mediator, _asset) = setup();
+        let (env, client, tenant, landlord, mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -458,7 +458,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "funds already released")]
     fn double_release_fail() {
-        let (_env, client, tenant, landlord, _mediator, _asset) = setup();
+        let (_env, client, tenant, landlord, _mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -469,7 +469,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "case already closed")]
     fn action_after_closed_fail() {
-        let (_env, client, tenant, landlord, mediator, _asset) = setup();
+        let (_env, client, tenant, landlord, mediator, _asset_code) = setup();
         client.fund_deposit(&tenant, &1_500);
         client.confirm_move_in(&tenant);
         client.request_refund(&tenant);
@@ -481,7 +481,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "invalid state transition")]
     fn invalid_state_transition_fail() {
-        let (_env, client, tenant, _landlord, _mediator, _asset) = setup();
+        let (_env, client, tenant, _landlord, _mediator, _asset_code) = setup();
         client.request_refund(&tenant);
     }
 }
