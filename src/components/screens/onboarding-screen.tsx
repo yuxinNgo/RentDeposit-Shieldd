@@ -68,9 +68,7 @@ export function OnboardingScreen() {
                     ? "Create cases and manage deductions."
                     : role === "TENANT"
                       ? "Fund escrow and request refunds."
-                      : role === "MEDIATOR"
-                        ? "Resolve disputes with a final split."
-                        : "Monitor analytics and readiness."}
+                      : "Resolve disputes with a final split."}
                 </p>
               </button>
             ))}
@@ -114,9 +112,7 @@ export function OnboardingScreen() {
                   ? "Create a new deposit case."
                   : session.role === "TENANT"
                     ? "Open a case and fund escrow."
-                    : session.role === "MEDIATOR"
-                      ? "Review disputed cases."
-                      : "Inspect analytics and submission readiness."}
+                    : "Review disputed cases."}
               </span>
             </div>
           </div>

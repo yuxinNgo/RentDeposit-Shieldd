@@ -10,7 +10,6 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   TENANT: "Tenant",
   LANDLORD: "Landlord",
   MEDIATOR: "Mediator",
-  ADMIN: "Admin",
 };
 
 export const STATUS_LABELS: Record<DepositCaseStatus, string> = {
@@ -35,7 +34,7 @@ export const NAV_ITEMS = [
   { href: "/submission", label: "Submission" },
 ];
 
-export const ROLE_OPTIONS: UserRole[] = ["LANDLORD", "TENANT", "MEDIATOR", "ADMIN"];
+export const ROLE_OPTIONS: UserRole[] = ["LANDLORD", "TENANT", "MEDIATOR"];
 
 export const EVENT_NAMES = [
   "page_view",

@@ -1,4 +1,4 @@
-export type UserRole = "TENANT" | "LANDLORD" | "MEDIATOR" | "ADMIN";
+export type UserRole = "TENANT" | "LANDLORD" | "MEDIATOR";
 
 export type DepositCaseStatus =
   | "CREATED"

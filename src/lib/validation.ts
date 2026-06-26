@@ -25,12 +25,12 @@ export const createCaseSchema = z.object({
 export const onboardingSchema = z.object({
   name: z.string().min(2),
   email: z.email(),
-  role: z.enum(["TENANT", "LANDLORD", "MEDIATOR", "ADMIN"]),
+  role: z.enum(["TENANT", "LANDLORD", "MEDIATOR"]),
   walletAddress: stellarPublicKeySchema,
 });
 
 export const feedbackSchema = z.object({
-  role: z.enum(["TENANT", "LANDLORD", "MEDIATOR", "ADMIN"]),
+  role: z.enum(["TENANT", "LANDLORD", "MEDIATOR"]),
   walletAddress: stellarPublicKeySchema,
   rating: z.coerce.number().min(1).max(5),
   workedWell: z.string().min(4),
@@ -50,7 +50,7 @@ export const caseActionSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("UPLOAD_EVIDENCE"),
-    actorRole: z.enum(["TENANT", "LANDLORD", "MEDIATOR", "ADMIN"]),
+    actorRole: z.enum(["TENANT", "LANDLORD", "MEDIATOR"]),
     actorWallet: stellarPublicKeySchema,
     phase: z.enum(["MOVE_IN", "MOVE_OUT", "DISPUTE"]),
     category: z.string().min(2),
