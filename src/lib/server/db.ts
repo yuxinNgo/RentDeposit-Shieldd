@@ -1,47 +1,121 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import { createSeedData } from "@/lib/server/seed";
+import { postgresQuery, withPostgresClient } from "@/lib/server/postgres";
 import type { AppDatabase } from "@/lib/types";
 
-const DB_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DB_DIR, "app-db.json");
+const APP_STATE_ID = "primary";
 
-let queue = Promise.resolve();
+declare global {
+  var __rentDepositDbReady: Promise<void> | undefined;
+}
 
-async function ensureDbFile() {
-  await fs.mkdir(DB_DIR, { recursive: true });
-
-  try {
-    await fs.access(DB_PATH);
-  } catch {
-    await fs.writeFile(DB_PATH, JSON.stringify(createSeedData(), null, 2), "utf8");
+function normalizeState(value: unknown): AppDatabase {
+  if (typeof value === "string") {
+    return JSON.parse(value) as AppDatabase;
   }
+
+  return value as AppDatabase;
+}
+
+async function initializeDatabase() {
+  await withPostgresClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS app_state (
+          id TEXT PRIMARY KEY,
+          state JSONB NOT NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `);
+
+      await client.query(
+        `
+          INSERT INTO app_state (id, state)
+          VALUES ($1, $2::jsonb)
+          ON CONFLICT (id) DO NOTHING
+        `,
+        [APP_STATE_ID, JSON.stringify(createSeedData())],
+      );
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  });
+}
+
+export async function ensureDatabaseReady() {
+  if (!globalThis.__rentDepositDbReady) {
+    globalThis.__rentDepositDbReady = initializeDatabase().catch((error) => {
+      globalThis.__rentDepositDbReady = undefined;
+      throw error;
+    });
+  }
+
+  await globalThis.__rentDepositDbReady;
 }
 
 export async function readDb(): Promise<AppDatabase> {
-  await queue;
-  await ensureDbFile();
-  const raw = await fs.readFile(DB_PATH, "utf8");
-  return JSON.parse(raw) as AppDatabase;
+  await ensureDatabaseReady();
+  const result = await postgresQuery<{ state: unknown }>("SELECT state FROM app_state WHERE id = $1", [APP_STATE_ID]);
+  const row = result.rows[0];
+
+  if (!row) {
+    throw new Error("Database state row is missing.");
+  }
+
+  return normalizeState(row.state);
 }
 
 export async function writeDb(next: AppDatabase) {
-  await ensureDbFile();
-  await fs.writeFile(DB_PATH, JSON.stringify(next, null, 2), "utf8");
+  await ensureDatabaseReady();
+  await postgresQuery(
+    `
+      UPDATE app_state
+      SET state = $2::jsonb, updated_at = NOW()
+      WHERE id = $1
+    `,
+    [APP_STATE_ID, JSON.stringify(next)],
+  );
 }
 
 export async function updateDb<T>(mutator: (db: AppDatabase) => Promise<T> | T): Promise<T> {
-  const run = queue.then(async () => {
-    const db = await readDb();
-    const result = await mutator(db);
-    await writeDb(db);
-    return result;
+  await ensureDatabaseReady();
+
+  return withPostgresClient(async (client) => {
+    await client.query("BEGIN");
+
+    try {
+      const result = await client.query<{ state: unknown }>(
+        "SELECT state FROM app_state WHERE id = $1 FOR UPDATE",
+        [APP_STATE_ID],
+      );
+      const row = result.rows[0];
+
+      if (!row) {
+        throw new Error("Database state row is missing.");
+      }
+
+      const db = normalizeState(row.state);
+      const output = await mutator(db);
+
+      await client.query(
+        `
+          UPDATE app_state
+          SET state = $2::jsonb, updated_at = NOW()
+          WHERE id = $1
+        `,
+        [APP_STATE_ID, JSON.stringify(db)],
+      );
+
+      await client.query("COMMIT");
+      return output;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
   });
-
-  queue = run.then(
-    () => undefined,
-    () => undefined,
-  );
-
-  return run;
 }
