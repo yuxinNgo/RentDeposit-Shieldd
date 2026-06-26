@@ -18,13 +18,21 @@ export function WalletConnectButton() {
 
     try {
       const connection = await connectBrowserWallet();
-      await connectWalletApi({
+      const payload: Record<string, unknown> = {
         role: session.role,
         walletAddress: connection.walletAddress,
-        name: session.name,
-        email: session.email,
-      });
-      setSession({ walletAddress: connection.walletAddress });
+      };
+
+      if (session.name.trim().length >= 2) {
+        payload.name = session.name;
+      }
+
+      if (session.email.includes("@")) {
+        payload.email = session.email;
+      }
+
+      await connectWalletApi(payload);
+      setSession({ walletAddress: connection.walletAddress, walletProvider: connection.source });
       toast.success(`Wallet connected via ${connection.source}.`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Wallet connection failed.");
@@ -36,7 +44,11 @@ export function WalletConnectButton() {
   return (
     <Button variant={session.walletAddress ? "secondary" : "primary"} onClick={handleConnect} disabled={isPending}>
       <Wallet className="h-4 w-4" />
-      {session.walletAddress ? shortHash(session.walletAddress, 6) : isPending ? "Connecting..." : "Connect wallet"}
+      {session.walletAddress
+        ? `${session.walletProvider || "wallet"} ${shortHash(session.walletAddress, 6)}`
+        : isPending
+          ? "Connecting..."
+          : "Connect wallet"}
     </Button>
   );
 }

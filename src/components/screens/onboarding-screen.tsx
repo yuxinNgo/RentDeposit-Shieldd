@@ -20,8 +20,8 @@ export function OnboardingScreen() {
 
   async function connect() {
     const result = await connectWallet();
-    setSession({ walletAddress: result.walletAddress });
-    toast.success(`Wallet ${result.source === "mock" ? "mocked" : "connected"} on Stellar testnet.`);
+    setSession({ walletAddress: result.walletAddress, walletProvider: result.source });
+    toast.success(`Wallet connected through ${result.source} on Stellar testnet.`);
   }
 
   function submit() {
@@ -81,7 +81,9 @@ export function OnboardingScreen() {
           <div className="space-y-4">
             <div>
               <p className="text-sm font-semibold text-[var(--text-primary)]">Profile setup</p>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">Connect a wallet first, then store your role and basic profile through the internal API.</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                Connect Freighter or Rabet on Stellar testnet first, then store your role and basic profile through the internal API.
+              </p>
             </div>
             <Select value={session.role} onChange={(event) => setRole(event.target.value as typeof session.role)}>
               {ROLE_OPTIONS.map((role) => (
@@ -93,6 +95,7 @@ export function OnboardingScreen() {
             <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Full name" />
             <Input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" />
             <Input value={session.walletAddress} readOnly placeholder="Connect wallet to populate address" />
+            <Input value={session.walletProvider} readOnly placeholder="Wallet provider will appear here" />
             <div className="flex flex-wrap gap-3">
               <Button variant="secondary" onClick={() => void connect()}>
                 Connect wallet

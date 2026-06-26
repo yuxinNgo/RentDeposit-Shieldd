@@ -15,6 +15,7 @@ import type { UserRole } from "@/lib/types";
 export interface AppSession {
   role: UserRole;
   walletAddress: string;
+  walletProvider: string;
   name: string;
   email: string;
 }
@@ -29,8 +30,9 @@ interface AppClientContextValue {
 const defaultSession: AppSession = {
   role: "LANDLORD",
   walletAddress: "",
-  name: "Demo user",
-  email: "demo@example.com",
+  walletProvider: "",
+  name: "",
+  email: "",
 };
 
 const AppClientContext = createContext<AppClientContextValue | null>(null);
