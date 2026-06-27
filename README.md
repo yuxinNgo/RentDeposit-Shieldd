@@ -11,8 +11,8 @@ RentDeposit Shield is a production-oriented Stellar testnet rental escrow worksp
 | Public repository | `https://github.com/yuxinNgo/RentDeposit-Shieldd` |
 | Commit count | `20+ meaningful commits` |
 | Deployment target | Railway |
-| Live demo link | `Add your Railway public URL here before final submission` |
-| Demo video link | `Add your Loom / YouTube link here before final submission` |
+| Live demo link | `https://rentdeposit-shieldd-production.up.railway.app/` |
+| Demo video link | `No local demo video file is currently committed in this repository.` |
 | Contract deployment address | `CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW` |
 | Contract creation transaction | `c58654dd82c6e493eb5ad21bc486d6f9aa9a5f90c632e18866acf7a89c48745b` |
 | Contract interaction transaction | `6b54d3ab274f3f6ce9b63934d9e2a7862fd9bf126cd59bd8037fab55e83923af` |
@@ -31,7 +31,7 @@ RentDeposit Shield is a production-oriented Stellar testnet rental escrow worksp
 | Error handling and loading states | Shared UI primitives handle loading, empty, and error flows via [`src/components/common/loading-state.tsx`](src/components/common/loading-state.tsx), [`src/components/common/error-state.tsx`](src/components/common/error-state.tsx), and [`src/components/common/empty-state.tsx`](src/components/common/empty-state.tsx). |
 | Tests for contracts and frontend | The repo contains both Soroban Rust unit tests and frontend/domain tests executed through Vitest. |
 | Production-ready architecture | Single-repo app with Next.js API routes, PostgreSQL persistence, environment-driven deploy config, Railway standalone output, healthcheck route, and GitHub Actions CI. |
-| Documentation and demo presentation | This README, on-chain proof JSON, screenshots, and the owner-provided demo link/video are the final submission package. |
+| Documentation and demo presentation | This README, the live Railway demo, on-chain proof JSON, and screenshots form the current submission package. |
 
 ## Product Overview
 
@@ -291,6 +291,6 @@ npm run submission:populate
 
 ## Submission Notes
 
-- Replace the live demo placeholder with your final Railway public URL before submission.
-- Replace the demo video placeholder with your Loom or YouTube demo link before submission.
+- Live demo URL is set to `https://rentdeposit-shieldd-production.up.railway.app/`.
+- No local demo video file is currently included in `F:\duan4`.
 - The README, screenshots, workflow file, and `docs/submission-proof.json` form the Level 5 documentation package for this repo.
