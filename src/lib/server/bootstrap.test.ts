@@ -1,4 +1,5 @@
 import { buildBootstrapPayload } from "@/lib/server/bootstrap";
+import { createLevel5ProofSeedData, shouldHydrateLevel5Proof } from "@/lib/server/proof-seed";
 import { createSeedData } from "@/lib/server/seed";
 
 describe("bootstrap payload", () => {
@@ -50,5 +51,17 @@ describe("bootstrap payload", () => {
     expect(payload.submission.uniqueWalletAddresses).toBe(55);
     expect(payload.submission.proofUsers).toHaveLength(50);
     expect(payload.feedback).toHaveLength(50);
+  });
+
+  it("builds visible Level 5 proof data for an empty web database", () => {
+    const empty = createSeedData();
+    const db = createLevel5ProofSeedData();
+    const payload = buildBootstrapPayload(db);
+
+    expect(shouldHydrateLevel5Proof(empty)).toBe(true);
+    expect(payload.users).toHaveLength(50);
+    expect(payload.cases).toHaveLength(1);
+    expect(payload.feedbackSummary.totalResponses).toBe(50);
+    expect(payload.submission.uniqueWalletAddresses).toBe(50);
   });
 });

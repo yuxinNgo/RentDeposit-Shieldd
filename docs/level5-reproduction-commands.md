@@ -21,3 +21,4 @@ The population script creates:
 
 Secret keys are written only to `.submission-wallets.local.json`, which is ignored by git.
 
+The deployed app also hydrates the committed Level 5 proof seed automatically when the database state is empty.

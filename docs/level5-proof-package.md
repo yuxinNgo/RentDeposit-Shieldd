@@ -9,6 +9,7 @@ This directory contains the Level 5 proof artifacts for RentDeposit Shield.
 - Analytics or transaction activity proof: app event totals and Stellar testnet transaction hashes in `level5-transaction-activity-proof.md`.
 - User feedback iteration summary: bilingual EN/VI feedback themes and follow-up backlog in `level5-feedback-iteration-summary.md`.
 - Machine-readable snapshot: `submission-proof.json`.
+- Live app visibility: empty databases auto-hydrate this proof seed so the web UI shows the case, feedback and analytics without a manual local script.
 
 ## Integrity Notes
 

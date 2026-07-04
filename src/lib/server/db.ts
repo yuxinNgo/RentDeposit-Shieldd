@@ -1,4 +1,4 @@
-import { createSeedData } from "@/lib/server/seed";
+import { createLevel5ProofSeedData, shouldHydrateLevel5Proof } from "@/lib/server/proof-seed";
 import { postgresQuery, withPostgresClient } from "@/lib/server/postgres";
 import type { AppDatabase } from "@/lib/types";
 
@@ -36,7 +36,7 @@ async function initializeDatabase() {
           VALUES ($1, $2::jsonb)
           ON CONFLICT (id) DO NOTHING
         `,
-        [APP_STATE_ID, JSON.stringify(createSeedData())],
+        [APP_STATE_ID, JSON.stringify(createLevel5ProofSeedData())],
       );
 
       await client.query("COMMIT");
@@ -67,7 +67,15 @@ export async function readDb(): Promise<AppDatabase> {
     throw new Error("Database state row is missing.");
   }
 
-  return normalizeState(row.state);
+  const db = normalizeState(row.state);
+
+  if (shouldHydrateLevel5Proof(db)) {
+    const seeded = createLevel5ProofSeedData();
+    await writeDb(seeded);
+    return seeded;
+  }
+
+  return db;
 }
 
 export async function writeDb(next: AppDatabase) {
@@ -99,7 +107,8 @@ export async function updateDb<T>(mutator: (db: AppDatabase) => Promise<T> | T):
         throw new Error("Database state row is missing.");
       }
 
-      const db = normalizeState(row.state);
+      const state = normalizeState(row.state);
+      const db = shouldHydrateLevel5Proof(state) ? createLevel5ProofSeedData() : state;
       const output = await mutator(db);
 
       await client.query(
