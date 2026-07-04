@@ -26,7 +26,7 @@ export function SubmissionScreen() {
     <div className="space-y-6">
       <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         <Card className="hero-mesh">
-          <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">Startup track level 4</p>
+          <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">Startup track level 5</p>
           <h2 className="mt-2 text-3xl font-semibold text-[var(--text-primary)]">Submission evidence bundle</h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
             One page to review repo link, live on-chain contract addresses, user proof, feedback and readiness notes before pushing the final package.
@@ -77,7 +77,7 @@ export function SubmissionScreen() {
           </div>
           <p className="text-3xl font-semibold text-[var(--text-primary)]">{data.submission.commitCount}</p>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            {data.submission.commitsReady ? "15+ meaningful commits recorded in git history." : "Need at least 15 meaningful commits in git history."}
+            {data.submission.commitsReady ? "20+ meaningful commits recorded in git history." : "Need at least 20 meaningful commits in git history."}
           </p>
         </Card>
       </section>
@@ -99,7 +99,7 @@ export function SubmissionScreen() {
           {data.submission.proofUsers.length === 0 ? (
             <EmptyState
               title="No proof wallets yet"
-              description="Wallet proof appears here after real Freighter or Rabet interactions are recorded in the app."
+              description="Wallet proof appears here after Stellar testnet interactions are recorded in the app."
             />
           ) : (
             <div className="space-y-3">
