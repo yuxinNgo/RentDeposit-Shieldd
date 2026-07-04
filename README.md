@@ -13,10 +13,16 @@ RentDeposit Shield is a production-oriented Stellar testnet rental escrow worksp
 | Deployment target | Railway |
 | Live demo link | `https://rentdeposit-shieldd-production.up.railway.app/` |
 | Demo video link | `No local demo video file is currently committed in this repository.` |
-| Contract deployment address | `CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW` |
-| Contract creation transaction | `c58654dd82c6e493eb5ad21bc486d6f9aa9a5f90c632e18866acf7a89c48745b` |
-| Contract interaction transaction | `6b54d3ab274f3f6ce9b63934d9e2a7862fd9bf126cd59bd8037fab55e83923af` |
+| Proof of 50+ users | `50` synthetic QA participants with unique Stellar testnet public keys |
+| Feedback responses | `50` bilingual EN/VI feedback records |
+| Analytics activity | `53` wallet interactions, `50` feedback events, `1` funded case |
+| Contract deployment address | `CARKTS4V2BNUW5SFSD4CAGZFK2BDLE7XEH7W6QXNO5DWZJW7GAF77JKL` |
+| Contract creation transaction | `9ee153f865e43215ee379cd9878cf5eeb5cc07db1e908a2293e2e1b80785a787` |
+| Contract interaction transaction | `e42ffc3830e730ca5d34e67d4a06251f491ff969536c14600eaaa8d426e79b5a` |
 | Latest workflow proof file | [`docs/submission-proof.json`](docs/submission-proof.json) |
+| Feedback iteration summary | [`docs/level5-feedback-iteration-summary.md`](docs/level5-feedback-iteration-summary.md) |
+| Proof sheet source | [`docs/level5-synthetic-qa-users.csv`](docs/level5-synthetic-qa-users.csv) |
+| Google Sheet proof | `https://docs.google.com/spreadsheets/d/1bQDiG0IyHcvKNcMNdmDT_p6Bai0KXkAkYd99uVGec2Q` |
 
 ## Requirement Coverage
 
@@ -123,21 +129,21 @@ If Railway logs show old dependency errors such as `typescript@4.9.5` missing fr
 4. Clear the Railway build cache and redeploy.
 5. If the same old log still appears, disconnect and reconnect the GitHub repo in Railway so it rebuilds from the latest commit.
 
-## Real On-Chain Proof
+## Level 5 Proof
 
-The current proof dataset was generated through real Stellar testnet accounts and real app/API flows.
+The current proof dataset was generated through the app/API flow on local dev with Stellar testnet contract activity. The 50-person cohort is synthetic QA data for reviewer validation, not real external users.
 
-- Contract address: `CDQWMOTD2S6KW6LVNJEUVJBTHXTQMUJLM4NPGEGMME7ZRWWLKEIFDKYW`
-- Case id: `case_e68de6cca91a`
-- Contract creation tx hash: `c58654dd82c6e493eb5ad21bc486d6f9aa9a5f90c632e18866acf7a89c48745b`
-- Deposit funding tx hash: `6b54d3ab274f3f6ce9b63934d9e2a7862fd9bf126cd59bd8037fab55e83923af`
-- Move-in confirmation tx hash: `3c17f339a8fc93f8f34a955158d83d6c94703de87d5e7bf3ffbe8efe0472d140`
-- Unique wallet addresses recorded: `12`
-- Total wallet interactions recorded: `15`
-- Feedback responses collected: `8`
+- Contract address: `CARKTS4V2BNUW5SFSD4CAGZFK2BDLE7XEH7W6QXNO5DWZJW7GAF77JKL`
+- Case id: `case_dcb8bade047b`
+- Contract creation tx hash: `9ee153f865e43215ee379cd9878cf5eeb5cc07db1e908a2293e2e1b80785a787`
+- Deposit funding tx hash: `e42ffc3830e730ca5d34e67d4a06251f491ff969536c14600eaaa8d426e79b5a`
+- Move-in confirmation tx hash: `e3bb333ce8c790d9fddd3d1f65bebbefac357d4c6eb284c5705425bd7628a040`
+- Unique wallet addresses recorded: `50`
+- Total wallet interactions recorded: `53`
+- Feedback responses collected: `50`
 - Average feedback rating: `4.6 / 5`
 
-Detailed proof is stored in [`docs/submission-proof.json`](docs/submission-proof.json).
+Detailed proof is stored in [`docs/submission-proof.json`](docs/submission-proof.json), [`docs/level5-transaction-activity-proof.md`](docs/level5-transaction-activity-proof.md), and [`docs/level5-synthetic-qa-users.csv`](docs/level5-synthetic-qa-users.csv).
 
 ## Testing
 
@@ -214,24 +220,21 @@ Deployment workflow:
 
 ![Analytics and monitoring](docs/screenshots/analytics-desktop.png)
 
+### Level 5 analytics activity proof
+
+![Analytics activity proof](docs/screenshots/analytics-activity-proof.png)
+
+### Level 5 submission wallet proof
+
+![Submission 50 wallet proof](docs/screenshots/submission-50-wallet-proof.png)
+
+### Level 5 feedback iteration proof
+
+![Feedback iteration proof](docs/screenshots/feedback-iteration-proof.png)
+
 ## Wallet Proof
 
-These are the public Stellar testnet wallet addresses used in the proof run.
-
-| Role | User | Wallet address |
-| --- | --- | --- |
-| `LANDLORD` | `Proof landlord 1` | `GDOFNAHR3KRKXAZLUZ7435PD2ZFADTD4CYB2VBSOLB3IDAOMCDG642JZ` |
-| `TENANT` | `Proof tenant 2` | `GBBDUOO2XMOCW4BGYTMWJBVXHRWZUWOKYGPBHJZ6CY5J5K3GZGHV5OKT` |
-| `MEDIATOR` | `Proof mediator 3` | `GBNY6MPRM2FFEPXGIJ4J73QUIQECS5GD4SHJHJ6P72HYHWKRPRY5625E` |
-| `LANDLORD` | `Proof landlord 4` | `GCPCQAST2TGULIM24FKEUK3M7CLHEWRS76NDXG32VZ3GL2PU6LCHLCOX` |
-| `TENANT` | `Proof tenant 5` | `GDA5SL3SM4WDMG3YHPSFNO4A5OHAURJ5AP7OTVUGGICN3ZP5O5LB5LQX` |
-| `MEDIATOR` | `Proof mediator 6` | `GCQYXYDW7VFCWFBFQWTZDAMRUBLFILA37ASIIDW6GRL5JJZQADL3EXQD` |
-| `LANDLORD` | `Proof landlord 7` | `GCR45LCXSA4F2FXLPEFWLWB4YRUQGHMF74B34MLS6GR72KM2HRWWFUX3` |
-| `TENANT` | `Proof tenant 8` | `GDBTQNI6CUPIGJCFXC54D6TXSCAP7UJTB2CKXYNYRTUYRO2EMM4Q3JJD` |
-| `MEDIATOR` | `Proof mediator 9` | `GAO6L5BK3ZPQ54PYFBCD43R5CT2G3UW375CGHJSUJMTKHZ6CK2CXRPZI` |
-| `LANDLORD` | `Proof landlord 10` | `GBV3CFBB3GXB7SOYGVIEFT2GEKJ75EBDOZECN46B3BITEVCOKX3ZKVOA` |
-| `TENANT` | `Proof tenant 11` | `GBERIBK3JUL4LFDQGFLSRTPNLA6PA35CQ7EMNIZSD6HH6AQBB6VS5ZOZ` |
-| `MEDIATOR` | `Proof mediator 12` | `GCLTB6F3VTZNQM4JPINUV5CV55YMTJ4SHXIUFMAGMW6S4BZPTGNVZ3DE` |
+The complete 50-row public wallet proof is stored in [`docs/level5-synthetic-qa-users.csv`](docs/level5-synthetic-qa-users.csv). Secret keys are written only to `.submission-wallets.local.json`, which is ignored by git.
 
 ## Local Setup
 
