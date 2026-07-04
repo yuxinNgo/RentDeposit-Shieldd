@@ -19,9 +19,9 @@ export function createSeedData(): AppDatabase {
       demoVideoUrl: "",
       screenshotsChecklist: [
         "Landing page desktop",
-        "Dashboard overview",
-        "Case detail timeline",
-        "Mediator dispute panel",
+        "Analytics dashboard activity proof",
+        "Submission proof with 50 wallet addresses",
+        "Feedback iteration summary",
         "Mobile responsive cases list",
       ],
     },
