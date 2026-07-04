@@ -38,6 +38,7 @@ yarn-error.log*
 .codex-dev*.log
 .codex-start*.log
 .codex-railway*.log
+.codex-level5*.log
 
 # local test artifacts
 .playwright-smoke/
