@@ -106,7 +106,7 @@ function buildProofUsers(db: AppDatabase): ProofUser[] {
     });
   }
 
-  return proofUsers.slice(0, 12);
+  return proofUsers.slice(0, 50);
 }
 
 function getCommitCount() {
@@ -136,7 +136,7 @@ function buildSubmission(db: AppDatabase): SubmissionSummary {
     monitoringReady: db.errorLogs.length >= 0,
     readmeReady: true,
     commitCount,
-    commitsReady: commitCount >= 15,
+    commitsReady: commitCount >= 20,
     screenshotsChecklist: db.submissionMeta.screenshotsChecklist,
     totalOnboardedUsers: db.users.filter((entry) => entry.onboardingCompleted).length,
     uniqueWalletAddresses: uniqueWalletAddresses.size,
@@ -152,7 +152,7 @@ export function buildBootstrapPayload(db: AppDatabase): BootstrapPayload {
   return {
     users: db.users,
     cases,
-    feedback: db.feedback.slice(0, 12),
+    feedback: db.feedback.slice(0, 50),
     dashboard: {
       totalCases: db.cases.length,
       fundedCases: db.cases.filter((entry) => ["FUNDED", "MOVE_IN_CONFIRMED", "REFUND_REQUESTED", "DEDUCTION_PROPOSED", "DISPUTED"].includes(entry.status)).length,
