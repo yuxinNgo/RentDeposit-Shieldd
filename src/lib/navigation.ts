@@ -46,6 +46,7 @@ export const ROLE_WORKSPACE_CONFIG: Record<UserRole, RoleWorkspaceConfig> = {
       { href: "/cases", label: "Cases", icon: FileStack, ...caseListMatcher },
       { href: "/cases/new", label: "New case", icon: FilePlus2, exact: ["/cases/new"] },
       { href: "/analytics", label: "Analytics", icon: BarChart3, exact: ["/analytics"] },
+      { href: "/feedback", label: "Feedback", icon: MessageSquare, exact: ["/feedback"] },
       { href: "/submission", label: "Submission", icon: Send, exact: ["/submission"] },
     ],
   },
