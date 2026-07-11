@@ -4,26 +4,29 @@
 
 RentDeposit Shield turns the rental security-deposit lifecycle into a programmable Stellar escrow flow with role-based wallet actions, evidence, disputes, analytics, and an auditable settlement trail.
 
-## Start Here
+## ✅ Submission Checklist
 
-| Area | Link / status |
-| --- | --- |
-| Live product | [Railway deployment](https://rentdeposit-shieldd-production.up.railway.app/) |
-| User feedback | [36-response dataset](docs/level5-users.csv) · [feedback log](docs/user-feedback-log.md) · [improvements](docs/level5-feedback-iteration-summary.md) |
-| Presentation | [HTML pitch deck](public/submission/pitch-deck.html) |
-| Wallet proof | 50 unique Stellar testnet public keys in [submission-proof.json](docs/submission-proof.json) |
-| On-chain proof | [Contract creation](https://stellar.expert/explorer/testnet/tx/9ee153f865e43215ee379cd9878cf5eeb5cc07db1e908a2293e2e1b80785a787) · [deposit funding](https://stellar.expert/explorer/testnet/tx/e42ffc3830e730ca5d34e67d4a06251f491ff969536c14600eaaa8d426e79b5a) |
-| Repository / CI | [GitHub](https://github.com/yuxinNgo/RentDeposit-Shieldd) · [workflow](.github/workflows/ci.yml) |
+| Requirement | Status | Evidence |
+| --- | :---: | --- |
+| Public GitHub repository | ✅ | [yuxinNgo/RentDeposit-Shieldd](https://github.com/yuxinNgo/RentDeposit-Shieldd) |
+| Minimum 20+ meaningful commits | ✅ | 58+ commits on `main` |
+| Live deployed application | ✅ | [Open Railway app](https://rentdeposit-shieldd-production.up.railway.app/) |
+| PPT/Pitch deck link | ✅ | [Open HTML pitch deck](https://rentdeposit-shieldd-production.up.railway.app/submission/pitch-deck.html) |
+| Demo video link | ⏳ | [Recording status](#submission-notes) |
+| Proof of 50+ users | ✅ | [50-wallet JSON](docs/submission-proof.json) · [user proof CSV](docs/level5-users.csv) |
+| Screenshots of analytics or transaction activity | ✅ | [Analytics](docs/screenshots/analytics-activity-proof.png) · [wallet proof](docs/screenshots/submission-50-wallet-proof.png) |
+| Updated README and documentation | ✅ | [Proof package](docs/level5-proof-package.md) · [reviewer checklist](docs/level5-reviewer-checklist.md) |
+| User feedback iteration summary | ✅ | [36 responses](docs/user-feedback-log.md) · [shipped improvements](docs/level5-feedback-iteration-summary.md) |
 
-## Submission Evidence
+> Submit your GitHub repository link below before the monthly deadline.
+>
+> **Repository:** https://github.com/yuxinNgo/RentDeposit-Shieldd
 
-| Metric | Value |
-| --- | ---: |
-| Connected wallets | 50 |
-| User feedback responses | 36 |
-| Wallet interactions | 53 |
-| Funded cases | 1 |
-| Feedback audit | `npm run feedback:audit` |
+### Evidence totals
+
+50 connected wallets · 36 feedback responses · 53 wallet interactions · 1 funded case.
+
+Run `npm run feedback:audit` to validate the feedback dataset.
 
 ## Requirement Coverage
 
