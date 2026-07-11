@@ -2,7 +2,7 @@
 
 Google Sheet mirror:
 
-https://docs.google.com/spreadsheets/d/1bQDiG0IyHcvKNcMNdmDT_p6Bai0KXkAkYd99uVGec2Q
+https://docs.google.com/spreadsheets/d/1nqW8ra6w0Kf9tuelVO6zMsPeh2KdsvEBscMDoFf9A04/edit?usp=drivesdk
 
 Source file in this repository:
 
