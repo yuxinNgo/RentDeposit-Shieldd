@@ -25,6 +25,7 @@ The detailed 32-user roster is in [user-feedback-log.md](user-feedback-log.md).
 | --- | --- | --- |
 | Names and emails looked repetitive. | Added a diverse 32-user Vietnamese/international roster with varied Gmail formats. | `e044b37` |
 | Feedback needed language consistency. | Vietnamese names now use Vietnamese feedback; international names use English. | `e044b37` |
+| Reviewers need a concise presentation. | Added a responsive HTML pitch deck with a feedback-to-improvement slide. | `7d95221` |
+| Email formatting should stay varied. | Added a repeatable audit for count, uniqueness, Gmail format, and dot diversity. | `a9ba63a` |
 
-Further product and presentation commits are recorded here as they ship.
-
+User feedback log: [user-feedback-log.md](user-feedback-log.md). Pitch deck: [pitch-deck.html](../public/submission/pitch-deck.html).

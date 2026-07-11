@@ -21,6 +21,8 @@ RentDeposit Shield is a production-oriented Stellar testnet rental escrow worksp
 | Contract interaction transaction | `e42ffc3830e730ca5d34e67d4a06251f491ff969536c14600eaaa8d426e79b5a` |
 | Latest workflow proof file | [`docs/submission-proof.json`](docs/submission-proof.json) |
 | Feedback iteration summary | [`docs/level5-feedback-iteration-summary.md`](docs/level5-feedback-iteration-summary.md) |
+| User feedback log | [`docs/user-feedback-log.md`](docs/user-feedback-log.md) |
+| HTML pitch deck | [`public/submission/pitch-deck.html`](public/submission/pitch-deck.html) |
 | Proof sheet source | [`docs/level5-synthetic-qa-users.csv`](docs/level5-synthetic-qa-users.csv) |
 | Google Sheet proof | `https://docs.google.com/spreadsheets/d/1bQDiG0IyHcvKNcMNdmDT_p6Bai0KXkAkYd99uVGec2Q` |
 
