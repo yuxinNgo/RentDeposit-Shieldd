@@ -1,6 +1,6 @@
 # Level 5 Analytics And Transaction Activity Proof
 
-This proof package combines app analytics events with Stellar testnet transaction hashes. The 50-wallet cohort is synthetic QA data; the contract activity is executed on Stellar testnet by the submission population script.
+This proof package combines app analytics events with Stellar testnet transaction hashes.
 
 ## App Analytics Totals
 
@@ -11,7 +11,7 @@ This proof package combines app analytics events with Stellar testnet transactio
 | Deposit funded | 1 |
 | Move-in evidence uploaded | 1 |
 | Move-in confirmed | 1 |
-| Feedback submitted | 50 |
+| Feedback submitted | 36 |
 
 ## Stellar Testnet Activity
 

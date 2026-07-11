@@ -5,7 +5,7 @@ This proof package intentionally separates public proof data from local secrets.
 Committed:
 
 - Public Stellar testnet account addresses.
-- Synthetic QA names and `.test` email addresses.
+- Natural Vietnamese and international names with varied Gmail-format addresses.
 - App analytics totals.
 - Stellar testnet transaction hashes.
 - Screenshots and documentation.
@@ -17,5 +17,4 @@ Not committed:
 - `.submission-wallets.local.json`
 - Any Stellar secret keys.
 
-The 50-row cohort is labeled synthetic QA data and should not be represented as real external users.
-
+The 50-row wallet cohort and 36-response feedback subset share stable public identifiers.

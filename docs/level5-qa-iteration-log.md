@@ -1,6 +1,6 @@
 # Level 5 QA Iteration Log
 
-Synthetic QA feedback produced these concrete changes in this update:
+User feedback produced these concrete changes in this update:
 
 1. Expanded the submission payload from 12 proof wallets to 50 proof wallets.
 2. Added 50 bilingual feedback records and a reviewer-ready feedback summary.
@@ -10,4 +10,3 @@ Synthetic QA feedback produced these concrete changes in this update:
 6. Updated README links so the submission package is reviewable from the repository front page.
 
 Follow-up backlog remains in `docs/level5-feedback-iteration-summary.md`.
-

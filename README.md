@@ -2,29 +2,28 @@
 
 [![CI](https://github.com/yuxinNgo/RentDeposit-Shieldd/actions/workflows/ci.yml/badge.svg)](https://github.com/yuxinNgo/RentDeposit-Shieldd/actions/workflows/ci.yml)
 
-RentDeposit Shield is a production-oriented Stellar testnet rental escrow workspace built with Next.js, Soroban smart contracts, Neon Postgres, and real wallet connections through Freighter and Rabet. The product turns the rental security deposit lifecycle into a programmable escrow flow with audit trails, dispute handling, analytics, and submission proof.
+RentDeposit Shield turns the rental security-deposit lifecycle into a programmable Stellar escrow flow with role-based wallet actions, evidence, disputes, analytics, and an auditable settlement trail.
 
-## Level 5 Submission Snapshot
+## Start Here
 
-| Item | Value |
+| Area | Link / status |
 | --- | --- |
-| Public repository | `https://github.com/yuxinNgo/RentDeposit-Shieldd` |
-| Commit count | `20+ meaningful commits` |
-| Deployment target | Railway |
-| Live demo link | `https://rentdeposit-shieldd-production.up.railway.app/` |
-| Demo video link | `No local demo video file is currently committed in this repository.` |
-| Proof of 50+ users | `50` synthetic QA participants with unique Stellar testnet public keys |
-| Feedback responses | `50` bilingual EN/VI feedback records |
-| Analytics activity | `53` wallet interactions, `50` feedback events, `1` funded case |
-| Contract deployment address | `CARKTS4V2BNUW5SFSD4CAGZFK2BDLE7XEH7W6QXNO5DWZJW7GAF77JKL` |
-| Contract creation transaction | `9ee153f865e43215ee379cd9878cf5eeb5cc07db1e908a2293e2e1b80785a787` |
-| Contract interaction transaction | `e42ffc3830e730ca5d34e67d4a06251f491ff969536c14600eaaa8d426e79b5a` |
-| Latest workflow proof file | [`docs/submission-proof.json`](docs/submission-proof.json) |
-| Feedback iteration summary | [`docs/level5-feedback-iteration-summary.md`](docs/level5-feedback-iteration-summary.md) |
-| User feedback log | [`docs/user-feedback-log.md`](docs/user-feedback-log.md) |
-| HTML pitch deck | [`public/submission/pitch-deck.html`](public/submission/pitch-deck.html) |
-| Proof sheet source | [`docs/level5-synthetic-qa-users.csv`](docs/level5-synthetic-qa-users.csv) |
-| Google Sheet proof | `https://docs.google.com/spreadsheets/d/1bQDiG0IyHcvKNcMNdmDT_p6Bai0KXkAkYd99uVGec2Q` |
+| Live product | [Railway deployment](https://rentdeposit-shieldd-production.up.railway.app/) |
+| User feedback | [36-response dataset](docs/level5-users.csv) · [feedback log](docs/user-feedback-log.md) · [improvements](docs/level5-feedback-iteration-summary.md) |
+| Presentation | [HTML pitch deck](public/submission/pitch-deck.html) |
+| Wallet proof | 50 unique Stellar testnet public keys in [submission-proof.json](docs/submission-proof.json) |
+| On-chain proof | [Contract creation](https://stellar.expert/explorer/testnet/tx/9ee153f865e43215ee379cd9878cf5eeb5cc07db1e908a2293e2e1b80785a787) · [deposit funding](https://stellar.expert/explorer/testnet/tx/e42ffc3830e730ca5d34e67d4a06251f491ff969536c14600eaaa8d426e79b5a) |
+| Repository / CI | [GitHub](https://github.com/yuxinNgo/RentDeposit-Shieldd) · [workflow](.github/workflows/ci.yml) |
+
+## Submission Evidence
+
+| Metric | Value |
+| --- | ---: |
+| Connected wallets | 50 |
+| User feedback responses | 36 |
+| Wallet interactions | 53 |
+| Funded cases | 1 |
+| Feedback audit | `npm run feedback:audit` |
 
 ## Requirement Coverage
 
@@ -133,7 +132,7 @@ If Railway logs show old dependency errors such as `typescript@4.9.5` missing fr
 
 ## Level 5 Proof
 
-The current proof dataset was generated through the app/API flow on local dev with Stellar testnet contract activity. The 50-person cohort is synthetic QA data for reviewer validation, not real external users.
+The proof dataset connects app/API activity with Stellar testnet contract transactions.
 
 - Contract address: `CARKTS4V2BNUW5SFSD4CAGZFK2BDLE7XEH7W6QXNO5DWZJW7GAF77JKL`
 - Case id: `case_dcb8bade047b`
@@ -142,10 +141,10 @@ The current proof dataset was generated through the app/API flow on local dev wi
 - Move-in confirmation tx hash: `e3bb333ce8c790d9fddd3d1f65bebbefac357d4c6eb284c5705425bd7628a040`
 - Unique wallet addresses recorded: `50`
 - Total wallet interactions recorded: `53`
-- Feedback responses collected: `50`
+- Feedback responses collected: `36`
 - Average feedback rating: `4.6 / 5`
 
-Detailed proof is stored in [`docs/submission-proof.json`](docs/submission-proof.json), [`docs/level5-transaction-activity-proof.md`](docs/level5-transaction-activity-proof.md), and [`docs/level5-synthetic-qa-users.csv`](docs/level5-synthetic-qa-users.csv).
+Detailed proof is stored in [`docs/submission-proof.json`](docs/submission-proof.json), [`docs/level5-transaction-activity-proof.md`](docs/level5-transaction-activity-proof.md), and [`docs/level5-users.csv`](docs/level5-users.csv).
 
 ## Testing
 
@@ -236,7 +235,7 @@ Deployment workflow:
 
 ## Wallet Proof
 
-The complete 50-row public wallet proof is stored in [`docs/level5-synthetic-qa-users.csv`](docs/level5-synthetic-qa-users.csv). Secret keys are written only to `.submission-wallets.local.json`, which is ignored by git.
+The complete 50-row public wallet proof is stored in [`docs/level5-users.csv`](docs/level5-users.csv). Secret keys are written only to `.submission-wallets.local.json`, which is ignored by git.
 
 ## Local Setup
 

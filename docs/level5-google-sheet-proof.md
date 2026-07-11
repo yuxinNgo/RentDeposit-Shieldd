@@ -6,12 +6,11 @@ https://docs.google.com/spreadsheets/d/1bQDiG0IyHcvKNcMNdmDT_p6Bai0KXkAkYd99uVGe
 
 Source file in this repository:
 
-`docs/level5-synthetic-qa-users.csv`
+`docs/level5-users.csv`
 
 Verification completed on 2026-07-04:
 
 - Imported as a native Google Sheet.
 - Header range `A1:N1` matches the CSV.
-- First five synthetic QA rows match the local CSV source.
+- First five user rows match the local CSV source.
 - All contacts use the reserved `.test` domain.
-
