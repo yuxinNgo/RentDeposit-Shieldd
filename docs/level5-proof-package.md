@@ -4,7 +4,7 @@ This directory contains the Level 5 proof artifacts for RentDeposit Shield.
 
 ## What Is Included
 
-- Proof of 50+ users: 50 participants with unique Stellar testnet public keys in `level5-users.csv`.
+- Proof of 50+ users: 50 participants with unique Stellar testnet public keys in `submission-proof.json`.
 - Google Sheet proof mirror: https://docs.google.com/spreadsheets/d/1nqW8ra6w0Kf9tuelVO6zMsPeh2KdsvEBscMDoFf9A04/edit?usp=drivesdk
 - Analytics or transaction activity proof: app event totals and Stellar testnet transaction hashes in `level5-transaction-activity-proof.md`.
 - User feedback iteration summary: bilingual EN/VI feedback themes and follow-up backlog in `level5-feedback-iteration-summary.md`.

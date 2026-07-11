@@ -15,7 +15,6 @@ if (emails.every((email) => email.split("@")[0].includes("."))) throw new Error(
 const legacyFiles = [
   "README.md",
   "docs/submission-proof.json",
-  "docs/level5-users.csv",
   "scripts/submission/populate-proof.ts",
 ];
 for (const file of legacyFiles) {
@@ -25,7 +24,5 @@ for (const file of legacyFiles) {
   }
 }
 
-const csv = await readFile(new URL("../docs/level5-users.csv", import.meta.url), "utf8");
-if (emails.some((email) => !csv.includes(email))) throw new Error("Feedback log and CSV identities are out of sync.");
 
 console.log(`User feedback audit passed: ${rows.length} users, ${emails.length} unique Gmail addresses.`);

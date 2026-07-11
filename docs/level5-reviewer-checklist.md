@@ -4,7 +4,7 @@ Use this checklist before submitting the repository link.
 
 - Public repository: https://github.com/yuxinNgo/RentDeposit-Shieldd
 - Live deployment target: Railway
-- Proof of 50+ users: `docs/level5-users.csv`
+- Proof of 50+ users: `docs/submission-proof.json`
 - Google Sheet proof mirror: `docs/level5-google-sheet-proof.md`
 - Analytics or transaction activity proof: `docs/level5-transaction-activity-proof.md`
 - User feedback iteration summary: `docs/level5-feedback-iteration-summary.md`

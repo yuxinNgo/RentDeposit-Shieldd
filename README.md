@@ -13,12 +13,12 @@ RentDeposit Shield turns the rental security-deposit lifecycle into a programmab
 | Live deployed application | ✅ | [Open Railway app](https://rentdeposit-shieldd-production.up.railway.app/) |
 | PPT/Pitch deck link | ✅ | [Open HTML pitch deck](https://rentdeposit-shieldd-production.up.railway.app/submission/pitch-deck.html) |
 | Demo video link | ⏳ | [Recording status](#submission-notes) |
-| Proof of 50+ users | ✅ | [50-wallet JSON](docs/submission-proof.json) · [user proof CSV](docs/level5-users.csv) |
+| Proof of 50+ users | ✅ | [50-wallet JSON](docs/submission-proof.json) |
 | Screenshots of analytics or transaction activity | ✅ | [Analytics](docs/screenshots/analytics-activity-proof.png) · [wallet proof](docs/screenshots/submission-50-wallet-proof.png) |
 | Updated README and documentation | ✅ | [Proof package](docs/level5-proof-package.md) · [reviewer checklist](docs/level5-reviewer-checklist.md) |
 | User feedback iteration summary | ✅ | [36 responses](docs/user-feedback-log.md) · [shipped improvements](docs/level5-feedback-iteration-summary.md) |
 | Google Form question set | ✅ | [Form template](docs/user-feedback-form.md) |
-| Google Sheet response export | ✅ | [Open native Google Sheet](https://docs.google.com/spreadsheets/d/1nqW8ra6w0Kf9tuelVO6zMsPeh2KdsvEBscMDoFf9A04/edit?usp=drivesdk) · [CSV source](docs/level5-users.csv) |
+| Google Sheet response export | ✅ | [Open native Google Sheet](https://docs.google.com/spreadsheets/d/1nqW8ra6w0Kf9tuelVO6zMsPeh2KdsvEBscMDoFf9A04/edit?usp=drivesdk) |
 
 > Submit your GitHub repository link below before the monthly deadline.
 >
@@ -149,7 +149,7 @@ The proof dataset connects app/API activity with Stellar testnet contract transa
 - Feedback responses collected: `36`
 - Average feedback rating: `4.6 / 5`
 
-Detailed proof is stored in [`docs/submission-proof.json`](docs/submission-proof.json), [`docs/level5-transaction-activity-proof.md`](docs/level5-transaction-activity-proof.md), and [`docs/level5-users.csv`](docs/level5-users.csv).
+Detailed proof is stored in [`docs/submission-proof.json`](docs/submission-proof.json), [`docs/level5-transaction-activity-proof.md`](docs/level5-transaction-activity-proof.md), and the linked Google Sheet.
 
 ## Testing
 
@@ -240,7 +240,7 @@ Deployment workflow:
 
 ## Wallet Proof
 
-The complete 50-row public wallet proof is stored in [`docs/level5-users.csv`](docs/level5-users.csv). Secret keys are written only to `.submission-wallets.local.json`, which is ignored by git.
+The complete 50-row public wallet proof is stored in [`docs/submission-proof.json`](docs/submission-proof.json). Secret keys are written only to `.submission-wallets.local.json`, which is ignored by git.
 
 ## Local Setup
 

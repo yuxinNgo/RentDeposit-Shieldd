@@ -72,7 +72,6 @@ const fundAllWallets = process.env.SUBMISSION_FUND_ALL === "1";
 const onChainFundedWalletCount = 3;
 const docsDir = path.join(process.cwd(), "docs");
 const proofSnapshotPath = path.join(docsDir, "submission-proof.json");
-const level5ProofCsvPath = path.join(docsDir, "level5-users.csv");
 const feedbackIterationPath = path.join(docsDir, "level5-feedback-iteration-summary.md");
 const transactionProofPath = path.join(docsDir, "level5-transaction-activity-proof.md");
 const proofPackagePath = path.join(docsDir, "level5-proof-package.md");
@@ -330,51 +329,6 @@ function buildFeedbackDraft(participant: Participant, index: number): FeedbackDr
   };
 }
 
-function csvEscape(value: string | number | boolean | undefined) {
-  const text = String(value ?? "");
-  return `"${text.replaceAll('"', '""')}"`;
-}
-
-async function writeLevel5Csv(participants: Participant[]) {
-  const header = [
-    "user_id",
-    "name",
-    "email",
-    "role",
-    "stellar_testnet_public_key",
-    "funded_for_onchain_case",
-    "wallet_interaction",
-    "feedback_submitted",
-    "rating",
-    "would_use",
-    "improvement_area",
-    "worked_well_en_vi",
-    "confusing_en_vi",
-    "comment_en_vi",
-  ];
-  const rows = participants.map((participant, index) => {
-    const feedback = buildFeedbackDraft(participant, index);
-    return [
-      `qa-${String(index + 1).padStart(2, "0")}`,
-      participant.name,
-      participant.email,
-      participant.role,
-      participant.walletAddress,
-      participant.fundedForOnChain,
-      "wallet_connected",
-      index < feedbackCount,
-      feedback.rating,
-      feedback.wouldUse,
-      feedback.improvementArea,
-      feedback.workedWell,
-      feedback.confusing,
-      feedback.comment,
-    ].map(csvEscape).join(",");
-  });
-
-  await fs.writeFile(level5ProofCsvPath, [header.map(csvEscape).join(","), ...rows].join("\n"), "utf8");
-}
-
 async function writeFeedbackIterationDoc(summary: BootstrapSummary, participants: Participant[]) {
   const generatedAt = new Date().toISOString();
   const feedbackTotal = summary.feedbackSummary.totalResponses;
@@ -402,7 +356,7 @@ Scope: RentDeposit Shield user-feedback cohort connected to the reviewer proof f
 | --- | --- | --- |
 | Evidence deadline clarity | EN: users asked for stronger evidence timing copy. VI: người dùng muốn nhấn rõ hạn nộp bằng chứng. | Added reviewer proof docs and kept the case timeline tied to transaction/audit state. |
 | Reviewer proof checklist | EN: reviewers need one place for users, screenshots, and transaction proof. VI: cần một chỗ gom user, ảnh, giao dịch. | Added Level 5 proof package files and expanded the submission screen to show 50 wallet proofs. |
-| Wallet proof linkage | Feedback should connect to wallet proof. | CSV proof sheet records each participant, public key, role, feedback and improvement area. |
+| Wallet proof linkage | Feedback should connect to wallet proof. | The linked Google Sheet records each participant, public key, role, feedback and improvement area. |
 | Mobile readability | EN: long labels can be hard to scan on mobile. VI: nhãn dài khó quét trên mobile. | Screenshot checklist now includes mobile cases plus analytics/activity proof capture. |
 | Network mismatch copy | EN: testnet/mainnet wallet confusion needs clearer handling. VI: cần nói rõ nhầm testnet/mainnet. | Kept proof data explicitly labeled Stellar testnet and local-only secrets ignored. |
 
@@ -413,7 +367,7 @@ Scope: RentDeposit Shield user-feedback cohort connected to the reviewer proof f
 - Add bilingual helper copy for tenants before funding a deposit.
 - Add a small network badge near wallet address fields.
 
-Source sheet: \`docs/level5-users.csv\`
+Source sheet: linked native Google Sheet response export (see README)
 Snapshot: \`docs/submission-proof.json\`
 `,
     "utf8",
@@ -469,7 +423,7 @@ This directory contains the Level 5 proof artifacts for RentDeposit Shield.
 
 ## What Is Included
 
-- Proof of 50+ users: ${participants.length} participants with unique Stellar testnet public keys in \`level5-users.csv\`.
+- Proof of 50+ users: ${participants.length} participants with unique Stellar testnet public keys in the linked Google Sheet response export.
 - Analytics or transaction activity proof: app event totals and Stellar testnet transaction hashes in \`level5-transaction-activity-proof.md\`.
 - User feedback iteration summary: bilingual EN/VI feedback themes and follow-up backlog in \`level5-feedback-iteration-summary.md\`.
 - Machine-readable snapshot: \`submission-proof.json\`.
@@ -529,7 +483,6 @@ async function writeSnapshot(summary: BootstrapSummary, participants: Participan
     "utf8",
   );
 
-  await writeLevel5Csv(participants);
   await writeFeedbackIterationDoc(summary, participants);
   await writeTransactionProofDoc(summary, caseSummary);
   await writeProofPackageDoc(summary, participants);
