@@ -10,4 +10,3 @@ if (emails.some((email) => !/^[a-z0-9.]+@gmail\.com$/.test(email))) throw new Er
 if (emails.every((email) => email.split("@")[0].includes("."))) throw new Error("Email local parts must not all use dots.");
 
 console.log(`User feedback audit passed: ${rows.length} users, ${emails.length} unique Gmail addresses.`);
-

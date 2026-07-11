@@ -40,4 +40,3 @@
 ## Improvement tracking
 
 The improvement-to-commit mapping is maintained in the feedback iteration summary.
-
