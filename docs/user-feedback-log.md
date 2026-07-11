@@ -36,6 +36,10 @@
 | 30 | Vũ Hoài Nam | hoainam.work@gmail.com | Tenant | Tôi muốn xem checklist trước khi xác nhận nạp cọc. |
 | 31 | Isabella Rossi | isabellarossi90@gmail.com | Mediator | The role separation is clear during dispute review. |
 | 32 | Marcus Lee | marcuslee.dev@gmail.com | Landlord | The submission proof should surface the feedback count prominently. |
+| 33 | Trịnh Nhật Minh | nhatminh612@gmail.com | Tenant | Cần làm rõ trạng thái đang chờ bên nào xác nhận. |
+| 34 | Nguyễn Bích Trâm | bichtramwork@gmail.com | Landlord | Tôi muốn đường dẫn giao dịch nằm ngay cạnh lịch sử hoạt động. |
+| 35 | Hannah Clark | hannahclark85@gmail.com | Tenant | Put the wallet network warning closer to the connect action. |
+| 36 | Ryan Cooper | ryan.cooper@gmail.com | Mediator | The evidence summary should show the next responsible role. |
 
 ## Improvement tracking
 

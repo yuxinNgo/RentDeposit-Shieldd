@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "feedback:audit": "node scripts/audit-user-feedback.mjs",
+    "feedback:sync": "node scripts/sync-feedback-artifacts.mjs",
     "test:watch": "vitest",
     "db:check": "tsx scripts/db/check-neon.ts",
     "submission:populate": "tsx scripts/submission/populate-proof.ts",

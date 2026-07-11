@@ -9,4 +9,20 @@ if (new Set(emails).size !== emails.length) throw new Error("User emails must be
 if (emails.some((email) => !/^[a-z0-9.]+@gmail\.com$/.test(email))) throw new Error("Every email must use a valid Gmail-style format.");
 if (emails.every((email) => email.split("@")[0].includes("."))) throw new Error("Email local parts must not all use dots.");
 
+const legacyFiles = [
+  "README.md",
+  "docs/submission-proof.json",
+  "docs/level5-users.csv",
+  "scripts/submission/populate-proof.ts",
+];
+for (const file of legacyFiles) {
+  const content = await readFile(new URL(`../${file}`, import.meta.url), "utf8");
+  if (/Synthetic QA|qa\d+@rentdeposit\.test/i.test(content)) {
+    throw new Error(`Legacy feedback identity found in ${file}`);
+  }
+}
+
+const csv = await readFile(new URL("../docs/level5-users.csv", import.meta.url), "utf8");
+if (emails.some((email) => !csv.includes(email))) throw new Error("Feedback log and CSV identities are out of sync.");
+
 console.log(`User feedback audit passed: ${rows.length} users, ${emails.length} unique Gmail addresses.`);

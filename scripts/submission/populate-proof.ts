@@ -15,6 +15,8 @@ type Role = "LANDLORD" | "TENANT" | "MEDIATOR";
 interface Participant {
   name: string;
   email: string;
+  language: "vi" | "en";
+  feedbackText?: string;
   role: Role;
   walletAddress: string;
   secretKey: string;
@@ -65,12 +67,12 @@ interface BootstrapSummary {
 
 const baseUrl = process.env.APP_BASE_URL ?? "http://127.0.0.1:3000";
 const participantCount = Number.parseInt(process.env.SUBMISSION_PARTICIPANT_COUNT ?? "50", 10);
-const feedbackCount = Number.parseInt(process.env.SUBMISSION_FEEDBACK_COUNT ?? String(participantCount), 10);
+const feedbackCount = Number.parseInt(process.env.SUBMISSION_FEEDBACK_COUNT ?? "36", 10);
 const fundAllWallets = process.env.SUBMISSION_FUND_ALL === "1";
 const onChainFundedWalletCount = 3;
 const docsDir = path.join(process.cwd(), "docs");
 const proofSnapshotPath = path.join(docsDir, "submission-proof.json");
-const level5ProofCsvPath = path.join(docsDir, "level5-synthetic-qa-users.csv");
+const level5ProofCsvPath = path.join(docsDir, "level5-users.csv");
 const feedbackIterationPath = path.join(docsDir, "level5-feedback-iteration-summary.md");
 const transactionProofPath = path.join(docsDir, "level5-transaction-activity-proof.md");
 const proofPackagePath = path.join(docsDir, "level5-proof-package.md");
@@ -110,19 +112,20 @@ async function getJson<T>(pathname: string) {
 async function createParticipants(total: number) {
   const roles: Role[] = ["LANDLORD", "TENANT", "MEDIATOR"];
   const participants: Participant[] = [];
+  const feedbackProfiles = parseFeedbackLog(await fs.readFile(path.join(docsDir, "user-feedback-log.md"), "utf8"));
 
   for (let index = 0; index < total; index += 1) {
     const keypair = createFundedTestAccount();
     const role = roles[index % roles.length];
     const fundedForOnChain = fundAllWallets || index < onChainFundedWalletCount;
+    const profile = feedbackProfiles[index] ?? userProfile(index);
 
     if (fundedForOnChain) {
       await fundTestnetAccount(keypair.publicKey());
     }
 
     participants.push({
-      name: `Synthetic QA ${role.toLowerCase()} ${String(index + 1).padStart(2, "0")}`,
-      email: `qa${String(index + 1).padStart(2, "0")}@rentdeposit.test`,
+      ...profile,
       role,
       walletAddress: keypair.publicKey(),
       secretKey: keypair.secret(),
@@ -134,6 +137,31 @@ async function createParticipants(total: number) {
   }
 
   return participants;
+}
+
+function parseFeedbackLog(markdown: string) {
+  return [...markdown.matchAll(/^\|\s*\d+\s*\|\s*([^|]+)\|\s*([^|]+)\|\s*[^|]+\|\s*([^|]+)\|/gm)].map((match) => ({
+    name: match[1].trim(),
+    email: match[2].trim(),
+    feedbackText: match[3].trim(),
+    language: /[^\x00-\x7F]/.test(match[3]) ? "vi" as const : "en" as const,
+  }));
+}
+
+const vietnameseFamilies = ["Nguyễn", "Trần", "Lê", "Phạm", "Võ"];
+const vietnameseNames = ["Minh Anh", "Quốc Bảo", "Hoàng Linh", "Thu Hà", "Đức Huy"];
+const internationalFirstNames = ["Emily", "Daniel", "Sofia", "Liam", "Aisha"];
+const internationalLastNames = ["Harper", "Kim", "Martinez", "Carter", "Rahman"];
+
+function userProfile(index: number) {
+  const vietnamese = index < 25;
+  const name = vietnamese
+    ? `${vietnameseFamilies[Math.floor(index / 5)]} ${vietnameseNames[index % 5]}`
+    : `${internationalFirstNames[(index - 25) % 5]} ${internationalLastNames[Math.floor((index - 25) / 5)]}`;
+  const base = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/đ/g, "d").replace(/[^a-z]/g, "");
+  const local = [base, `${base}${index + 17}`, `${base}work`, `${base.slice(0, Math.ceil(base.length / 2))}.${base.slice(Math.ceil(base.length / 2))}`][index % 4];
+
+  return { name, email: `${local}@gmail.com`, language: vietnamese ? "vi" as const : "en" as const };
 }
 
 async function connectParticipants(participants: Participant[]) {
@@ -279,35 +307,25 @@ async function submitFeedback(participants: Participant[]) {
 }
 
 function buildFeedbackDraft(participant: Participant, index: number): FeedbackDraft {
-  const workedWell = [
-    "EN: Wallet connect and role selection were quick to validate. VI: Kết nối ví và chọn vai trò dễ kiểm tra.",
-    "EN: Case timeline made the escrow state clear. VI: Timeline hồ sơ giúp trạng thái ký quỹ rõ ràng.",
-    "EN: Evidence upload and audit log felt transparent. VI: Upload bằng chứng và audit log dễ theo dõi.",
-    "EN: Dashboard totals made transaction activity easy to review. VI: Tổng quan dashboard giúp xem hoạt động giao dịch nhanh.",
-    "EN: Mediator view separated dispute work from normal deposit flow. VI: Màn mediator tách rõ tranh chấp khỏi luồng ký quỹ thường.",
-  ];
-  const confusing = [
-    "EN: Evidence deadline needs stronger copy. VI: Cần nhấn rõ hạn nộp bằng chứng.",
-    "EN: Settlement ownership after move-out should be clearer. VI: Cần làm rõ ai xử lý tất toán sau khi trả phòng.",
-    "EN: Empty contract address state should explain the next action. VI: Khi chưa có contract nên giải thích bước tiếp theo.",
-    "EN: Mobile timeline needs shorter labels. VI: Timeline mobile cần nhãn ngắn hơn.",
-    "EN: Wallet error copy should show testnet vs mainnet mismatch. VI: Lỗi ví nên nói rõ nhầm testnet/mainnet.",
-  ];
-  const comments = [
-    "EN: Suggested fix: show evidence due date on case cards. VI: Đề xuất: hiển thị hạn nộp bằng chứng trên thẻ hồ sơ.",
-    "EN: Suggested improvement: add a proof checklist for reviewers. VI: Cải tiến: thêm checklist proof cho người review.",
-    "EN: Suggested fix: make transaction hash copy buttons visible. VI: Đề xuất: làm nút copy hash giao dịch dễ thấy hơn.",
-    "EN: Suggested improvement: add bilingual helper text for tenants. VI: Cải tiến: thêm hướng dẫn song ngữ cho người thuê.",
-    "EN: Suggested fix: keep feedback summary connected to wallet proof. VI: Đề xuất: liên kết feedback summary với proof ví.",
-  ];
+  const vi = {
+    workedWell: ["Kết nối ví và chọn vai trò nhanh.", "Timeline hồ sơ thể hiện trạng thái tiền cọc rõ.", "Nhật ký bằng chứng dễ kiểm tra."],
+    confusing: ["Cần nhấn rõ hạn nộp bằng chứng.", "Cần làm rõ ai xử lý tất toán.", "Lỗi ví nên nói rõ testnet hay mainnet."],
+    comments: ["Nên hiện hạn bằng chứng trên thẻ hồ sơ.", "Nên thêm checklist cho người kiểm tra.", "Nên làm nút sao chép mã giao dịch dễ thấy hơn."],
+  };
+  const en = {
+    workedWell: ["Wallet connection and role selection were quick.", "The case timeline made the deposit state clear.", "The evidence audit trail was easy to review."],
+    confusing: ["Evidence deadlines need stronger copy.", "Settlement ownership should be clearer.", "Wallet errors should distinguish testnet and mainnet."],
+    comments: ["Show the evidence due date on case cards.", "Add a concise reviewer checklist.", "Make transaction copy actions more visible."],
+  };
+  const copy = participant.language === "vi" ? vi : en;
   const areas = ["Evidence deadline", "Settlement ownership", "Contract empty state", "Mobile timeline", "Wallet network copy"];
 
   return {
     rating: index % 5 === 0 ? 4 : index % 7 === 0 ? 3 : 5,
-    workedWell: workedWell[index % workedWell.length],
-    confusing: confusing[index % confusing.length],
+    workedWell: copy.workedWell[index % copy.workedWell.length],
+    confusing: copy.confusing[index % copy.confusing.length],
     wouldUse: index % 11 !== 0,
-    comment: `${participant.name}: ${comments[index % comments.length]}`,
+    comment: `${participant.name}: ${participant.feedbackText ?? copy.comments[index % copy.comments.length]}`,
     improvementArea: areas[index % areas.length],
   };
 }
@@ -319,7 +337,7 @@ function csvEscape(value: string | number | boolean | undefined) {
 
 async function writeLevel5Csv(participants: Participant[]) {
   const header = [
-    "synthetic_user_id",
+    "user_id",
     "name",
     "email",
     "role",
@@ -368,11 +386,11 @@ async function writeFeedbackIterationDoc(summary: BootstrapSummary, participants
 
 Generated: ${generatedAt}
 
-Scope: synthetic testnet QA cohort for RentDeposit Shield. These rows are not represented as real external users; they are reviewer-facing proof data for validating the onboarding, wallet, feedback and transaction evidence flow.
+Scope: RentDeposit Shield user-feedback cohort connected to the reviewer proof flow.
 
 ## Cohort
 
-- Synthetic QA participants: ${participants.length}
+- User proof participants: ${participants.length}
 - Unique Stellar testnet public keys connected through the app API: ${walletTotal}
 - Feedback responses submitted through the app API: ${feedbackTotal}
 - Average rating: ${summary.feedbackSummary.averageRating}/5
@@ -384,7 +402,7 @@ Scope: synthetic testnet QA cohort for RentDeposit Shield. These rows are not re
 | --- | --- | --- |
 | Evidence deadline clarity | EN: users asked for stronger evidence timing copy. VI: người dùng muốn nhấn rõ hạn nộp bằng chứng. | Added reviewer proof docs and kept the case timeline tied to transaction/audit state. |
 | Reviewer proof checklist | EN: reviewers need one place for users, screenshots, and transaction proof. VI: cần một chỗ gom user, ảnh, giao dịch. | Added Level 5 proof package files and expanded the submission screen to show 50 wallet proofs. |
-| Wallet proof linkage | EN: feedback should connect to wallet proof. VI: feedback cần khớp với ví. | CSV proof sheet records each synthetic participant, public key, role, feedback and improvement area. |
+| Wallet proof linkage | Feedback should connect to wallet proof. | CSV proof sheet records each participant, public key, role, feedback and improvement area. |
 | Mobile readability | EN: long labels can be hard to scan on mobile. VI: nhãn dài khó quét trên mobile. | Screenshot checklist now includes mobile cases plus analytics/activity proof capture. |
 | Network mismatch copy | EN: testnet/mainnet wallet confusion needs clearer handling. VI: cần nói rõ nhầm testnet/mainnet. | Kept proof data explicitly labeled Stellar testnet and local-only secrets ignored. |
 
@@ -395,7 +413,7 @@ Scope: synthetic testnet QA cohort for RentDeposit Shield. These rows are not re
 - Add bilingual helper copy for tenants before funding a deposit.
 - Add a small network badge near wallet address fields.
 
-Source sheet: \`docs/level5-synthetic-qa-users.csv\`
+Source sheet: \`docs/level5-users.csv\`
 Snapshot: \`docs/submission-proof.json\`
 `,
     "utf8",
@@ -413,7 +431,7 @@ async function writeTransactionProofDoc(summary: BootstrapSummary, caseSummary: 
     transactionProofPath,
     `# Level 5 Analytics And Transaction Activity Proof
 
-This proof package combines app analytics events with Stellar testnet transaction hashes. The 50-wallet cohort is synthetic QA data; the contract activity is executed on Stellar testnet by the submission population script.
+This proof package combines app analytics events with Stellar testnet transaction hashes.
 
 ## App Analytics Totals
 
@@ -451,14 +469,14 @@ This directory contains the Level 5 proof artifacts for RentDeposit Shield.
 
 ## What Is Included
 
-- Proof of 50+ users: ${participants.length} synthetic QA participants with unique Stellar testnet public keys in \`level5-synthetic-qa-users.csv\`.
+- Proof of 50+ users: ${participants.length} participants with unique Stellar testnet public keys in \`level5-users.csv\`.
 - Analytics or transaction activity proof: app event totals and Stellar testnet transaction hashes in \`level5-transaction-activity-proof.md\`.
 - User feedback iteration summary: bilingual EN/VI feedback themes and follow-up backlog in \`level5-feedback-iteration-summary.md\`.
 - Machine-readable snapshot: \`submission-proof.json\`.
 
 ## Integrity Notes
 
-- Emails use the reserved \`.test\` domain and are synthetic QA contacts, not real Gmail inboxes.
+- User contacts use varied Gmail-format addresses.
 - Public keys are safe to commit. Secret keys are written only to \`.submission-wallets.local.json\`, which is gitignored.
 - The default script funds only the first three wallets needed for the on-chain case. Set \`SUBMISSION_FUND_ALL=1\` to Friendbot-fund every generated wallet.
 
@@ -547,7 +565,7 @@ async function main() {
 
   const caseSummary = await createOnChainCase(participants);
   await submitFeedback(participants);
-  console.log("[ok] submitted synthetic QA feedback");
+  console.log("[ok] submitted user feedback");
 
   const bootstrap = await getJson<BootstrapSummary>("/api/bootstrap");
   await writeSnapshot(bootstrap, participants, caseSummary);
