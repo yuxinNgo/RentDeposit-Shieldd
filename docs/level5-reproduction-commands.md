@@ -15,7 +15,7 @@ npm run build
 The population script creates:
 
 - 50 synthetic Stellar testnet public keys.
-- 50 API-submitted feedback records.
+- 36 API-submitted feedback records.
 - 1 Stellar testnet escrow contract case.
 - Local proof files under `docs/`.
 

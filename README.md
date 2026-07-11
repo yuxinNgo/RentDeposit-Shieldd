@@ -17,6 +17,8 @@ RentDeposit Shield turns the rental security-deposit lifecycle into a programmab
 | Screenshots of analytics or transaction activity | ✅ | [Analytics](docs/screenshots/analytics-activity-proof.png) · [wallet proof](docs/screenshots/submission-50-wallet-proof.png) |
 | Updated README and documentation | ✅ | [Proof package](docs/level5-proof-package.md) · [reviewer checklist](docs/level5-reviewer-checklist.md) |
 | User feedback iteration summary | ✅ | [36 responses](docs/user-feedback-log.md) · [shipped improvements](docs/level5-feedback-iteration-summary.md) |
+| Google Form question set | ✅ | [Form template](docs/user-feedback-form.md) |
+| Excel-compatible response export | ✅ | [CSV export](docs/level5-users.csv) |
 
 > Submit your GitHub repository link below before the monthly deadline.
 >

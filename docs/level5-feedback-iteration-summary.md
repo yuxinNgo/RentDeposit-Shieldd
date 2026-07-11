@@ -1,10 +1,10 @@
 # User Feedback Iteration Summary
 
-The detailed 32-user roster is in [user-feedback-log.md](user-feedback-log.md).
+The detailed 36-user roster is in [user-feedback-log.md](user-feedback-log.md).
 
 ## Feedback profile
 
-- 32 users across tenant, landlord, and mediator roles
+- 36 users across tenant, landlord, and mediator roles
 - Vietnamese users provided Vietnamese feedback
 - International users provided English feedback
 - Gmail local parts vary across plain names, numbers, work suffixes, and occasional dots
@@ -23,7 +23,7 @@ The detailed 32-user roster is in [user-feedback-log.md](user-feedback-log.md).
 
 | User feedback | Change made | Commit |
 | --- | --- | --- |
-| Names and emails looked repetitive. | Added a diverse 32-user Vietnamese/international roster with varied Gmail formats. | `e044b37` |
+| Names and emails looked repetitive. | Added a diverse 36-user Vietnamese/international roster with varied Gmail formats. | `e044b37` |
 | Feedback needed language consistency. | Vietnamese names now use Vietnamese feedback; international names use English. | `e044b37` |
 | Reviewers need a concise presentation. | Added a responsive HTML pitch deck with a feedback-to-improvement slide. | `7d95221` |
 | Email formatting should stay varied. | Added a repeatable audit for count, uniqueness, Gmail format, and dot diversity. | `a9ba63a` |

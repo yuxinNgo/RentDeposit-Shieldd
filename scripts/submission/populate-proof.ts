@@ -140,12 +140,12 @@ async function createParticipants(total: number) {
 }
 
 function parseFeedbackLog(markdown: string) {
-  return [...markdown.matchAll(/^\|\s*\d+\s*\|\s*([^|]+)\|\s*([^|]+)\|\s*[^|]+\|\s*([^|]+)\|/gm)].map((match) => ({
-    name: match[1].trim(),
-    email: match[2].trim(),
-    feedbackText: match[3].trim(),
-    language: /[^\x00-\x7F]/.test(match[3]) ? "vi" as const : "en" as const,
-  }));
+  return markdown.split("\n").filter((line) => /^\|\s*\d+\s*\|/.test(line)).map((line) => {
+    const cells = line.split("|").slice(1, -1).map((value) => value.trim());
+    const offset = cells.length === 6 ? 1 : 0;
+    const feedbackText = cells[4 + offset];
+    return { name: cells[1], email: cells[2], feedbackText, language: /[^\x00-\x7F]/.test(feedbackText) ? "vi" as const : "en" as const };
+  });
 }
 
 const vietnameseFamilies = ["Nguyễn", "Trần", "Lê", "Phạm", "Võ"];
