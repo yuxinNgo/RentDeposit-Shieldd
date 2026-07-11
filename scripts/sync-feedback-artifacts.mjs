@@ -12,4 +12,3 @@ await writeFile(snapshotUrl, JSON.stringify(snapshot,null,2)+"\n");
 const header=["user_id","name","email","role","stellar_testnet_public_key","funded_for_onchain_case","wallet_interaction","feedback_submitted","rating","would_use","worked_well","confusing","comment"];
 const rows=snapshot.participants.map((user,index)=>{const f=feedback[index];return [`user-${String(index+1).padStart(2,"0")}`,user.name,user.email,user.role,user.walletAddress,user.fundedForOnChain,"wallet_connected",Boolean(f),f?(index%7===0?4:5):"",f?index%11!==0:"",f?(f.vi?"Timeline hồ sơ và proof ví dễ kiểm tra.":"The case timeline and wallet proof were easy to review."):"",f?(f.vi?"Cần làm trạng thái và hành động tiếp theo rõ hơn.":"The next state and action need clearer guidance."):"",f?.feedback??""];});
 await writeFile(new URL("../docs/level5-users.csv",import.meta.url),[header,...rows].map(r=>r.map(cell).join(",")).join("\n")+"\n");
-
